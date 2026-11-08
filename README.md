@@ -52,6 +52,16 @@ Nominal student share: **85% = 17,000 ₸**. Platform transaction commission: **
 - Russian/Kazakh interface wording and tenge prices.
 - Local browser persistence, JSON download/import, optional file-save dialog where supported, reset and backup/restore.
 
+## Interactive messages (new)
+
+The **Messages** section now contains a dedicated two-column inbox: a searchable conversation list, unread badges, order context, message bubbles, and a composer. Open any visible order conversation directly from the inbox, including orders without earlier messages. The UI works on desktop and mobile (the mobile layout switches between conversations and the selected thread).
+
+- Send with **Enter**, insert a line break with **Shift+Enter**, or click **Send**. Messages may contain up to 1,500 characters.
+- Messages, sender, timestamp and recipient read state are saved automatically in the same browser JSON dataset as orders. The inbox also exports them via **Save JSON**. The preloaded example conversations are fictional.
+- Switch from SME to student or admin demo accounts to see the same order-linked messages from another participant's perspective. Unread markers update when the thread is opened.
+- Search by order, participant or message text; filter for unread threads.
+- No real-time network messaging, device synchronization, genuine account authentication or end-to-end encryption is provided. This remains a **single-browser demonstration**.
+
 ## Data storage and security limitations
 
 - `js/seed.js` provides the **fictional initial data**. `data/example-demo.json` is a schema example; it is not a real user database.

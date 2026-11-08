@@ -59,12 +59,34 @@ assert.equal(storage.state().ledger.filter(x=>x.orderId===o.id&&x.type==='demo_p
 api.review('b1',o.id,5,'Отличный демонстрационный результат.',true);
 assert.equal(api.getPortfolio('s1').some(x=>x.order.id===o.id),true);
 assert.throws(()=>api.review('b1',o.id,5,'Повторный отзыв.',false));
+// Interactive inbox: a participant can send, the other participant sees unread state,
+// viewing the conversation marks messages and corresponding alerts as read.
+assert.equal(api.unreadMessages('b1',o.id),0);
+assert.throws(()=>api.message('s3',o.id,'Unauthorized access is forbidden.'));
+assert.throws(()=>api.message('s1',o.id,'  '));
 api.message('s1',o.id,'Спасибо за демонстрационный заказ');
+assert.equal(api.unreadMessages('b1',o.id),1);
+assert.equal(storage.state().messages.some(x=>x.orderId===o.id&&x.readBy?.includes('s1')),true);
+const alert = storage.state().notifications.find(n=>n.userId==='b1'&&n.type==='message'&&n.text.includes(o.id));
+assert.equal(alert?.read,false);
+assert.equal(api.markThreadRead('b1',o.id),1);
+assert.equal(api.unreadMessages('b1',o.id),0);
+assert.equal(alert?.read,true);
+api.message('b1',o.id,'Пожалуйста, добавьте ссылку на результат.');
+assert.equal(api.unreadMessages('s1',o.id),1);
+assert.equal(api.markThreadRead('s1',o.id),1);
+assert.equal(api.unreadMessages('s1',o.id),0);
 assert.equal(storage.state().messages.some(x=>x.orderId===o.id),true);
+// Older JSON exports without message.readBy must remain readable.
+const olderSnapshot=JSON.parse(JSON.stringify(storage.state()));
+const lastMsg=olderSnapshot.messages.findLast(x=>x.orderId===o.id);
+delete lastMsg.readBy;
+assert.equal(storage.isData(olderSnapshot),true);
 const json=JSON.stringify(storage.state());
 assert.equal(storage.isData(JSON.parse(json)),true);
 storage.reset();
 assert.equal(storage.state().orders.some(x=>x.id===o.id),false);
 storage.importData(json);
 assert.equal(storage.state().orders.some(x=>x.id===o.id),true);
-console.log('PASS: 15%/85% payout, three services, roles, order lifecycle, QA, reviews, messaging, duplicate payment protection, JSON round-trip.');
+assert.equal(storage.state().messages.filter(x=>x.orderId===o.id).length,2);
+console.log('PASS: inbox unread/read status, local messages and JSON round-trip; 15%/85% payout, three services, roles, order lifecycle, QA, reviews, messaging, duplicate payment protection, JSON round-trip.');

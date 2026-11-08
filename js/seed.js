@@ -26,7 +26,7 @@ window.SBSeed={
  ],
  applications:[],
  skillTests:[{id:'test-s1',userId:'s1',serviceId:'catalog',score:4,total:4,passed:true,createdAt:date(-26)},{id:'test-s2',userId:'s2',serviceId:'excel',score:4,total:4,passed:true,createdAt:date(-25)},{id:'test-s3',userId:'s3',serviceId:'research',score:4,total:4,passed:true,createdAt:date(-24)}],
- messages:[{id:'msg-seed-1',orderId:'SB-1001',authorId:'b2',text:'Пожалуйста, сохраните исходные цены без округления.',createdAt:date(-9)},{id:'msg-seed-2',orderId:'SB-1001',authorId:'s2',text:'Принято, отмечу изменения отдельным списком.',createdAt:date(-8)}],
+ messages:[{id:'msg-seed-1',orderId:'SB-1001',authorId:'b2',text:'Пожалуйста, сохраните исходные цены без округления.',createdAt:date(-9),readBy:['b2']},{id:'msg-seed-2',orderId:'SB-1001',authorId:'s2',text:'Принято, отмечу изменения отдельным списком.',createdAt:date(-8),readBy:['s2']},{id:'msg-seed-3',orderId:'SB-1002',authorId:'b1',text:'Здравствуйте! Подскажите, когда студент сможет начать подготовку карточек?',createdAt:date(-5.5),readBy:['b1']},{id:'msg-seed-4',orderId:'SB-1002',authorId:'a1',text:'Здравствуйте! Мы подбираем исполнителя с пройденным тестом по каталогам. Все обновления будут в этом чате.',createdAt:date(-5),readBy:['a1']}],
  reviews:[],
  notifications:[{id:'nt-1',userId:'a1',type:'order',text:'Новый демо-заказ SB-1002 ожидает назначения.',createdAt:date(-5),read:false}],
  ledger:[{id:'txn-1',orderId:'SB-1001',type:'demo_funded',amount:20000,createdAt:date(-13),demo:true},{id:'txn-2',orderId:'SB-1002',type:'demo_funded',amount:20000,createdAt:date(-6),demo:true}],

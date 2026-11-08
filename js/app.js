@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const $=s=>document.querySelector(s);
-const state={uid:null,route:'landing',orderId:null,mobile:false,filters:{query:'',status:'',category:''},modal:null};
+const state={uid:null,route:'landing',orderId:null,mobile:false,filters:{query:'',status:'',category:''},modal:null,inbox:{threadId:null,query:'',filter:'all',mobileChat:false,drafts:{}}};
 const d=()=>window.SBStorage.state();
 const ui=()=>window.SBUI;
 const str=(s)=>String(s??'');
@@ -93,15 +93,16 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  }
  return modal(title,body,wide);
 }
-function show(){const root=$('#app');if(!root)return;let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():'');document.body.classList.toggle('modal-active',!!state.modal);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
+function scrollInbox(){const feed=$('#inbox-chat-feed');if(feed)feed.scrollTop=feed.scrollHeight;}
+function show(){const root=$('#app');if(!root)return;let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():'');document.body.classList.toggle('modal-active',!!state.modal);if(state.route==='messages')requestAnimationFrame(scrollInbox);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
 function render(keepScroll=false){let scroll=window.scrollY;show();if(!keepScroll)window.scrollTo(0,0);else window.scrollTo(0,scroll);}
 function navigate(route,oid=null){state.modal=null;if(route==='landing'){state.route='landing';state.orderId=null;state.mobile=false;render();return;}
  if(!getUser()){state.modal={type:'account'};state.route='landing';render();return;}
  const role=getUser().role;
  const allowed={business:['dashboard','catalog','orders','messages','notifications','profile','order-detail','faq','about'],student:['dashboard','opportunities','mytasks','screening','portfolio','earnings','messages','notifications','profile','order-detail','faq','about'],admin:['dashboard','admin-orders','admin-students','qa','disputes','finance','messages','notifications','profile','order-detail','faq','about','data']};
  if(!allowed[role].includes(route)){toast(term('Этот раздел не доступен выбранной роли.','Бұл бөлім осы рөлге қолжетімсіз.'),true);return;}
- state.route=route;state.orderId=oid||state.orderId;state.mobile=false;state.filters={query:'',status:'',category:''};render();}
-function choose(uid){const u=window.SBData.user(uid);if(!u){toast('Account not found.',true);return;}state.uid=uid;state.modal=null;state.route='dashboard';state.orderId=null;state.filters={query:'',status:'',category:''};state.mobile=false;try{sessionStorage.setItem('sb-current-user',uid);}catch(e){}render();toast(term(`Вы вошли как ${u.name} (DEMO)`,`Сіз ${u.name} ретінде кірдіңіз (DEMO)`));}
+ state.route=route;state.orderId=oid||state.orderId;state.mobile=false;state.filters={query:'',status:'',category:''};if(route==='messages'){const available=d().orders.filter(o=>window.SBData.visible(o,state.uid)).sort((a,b)=>new Date(b.updatedAt||b.createdAt)-new Date(a.updatedAt||a.createdAt));if(!available.some(o=>o.id===state.inbox.threadId))state.inbox.threadId=available[0]?.id||null;if(state.inbox.threadId)window.SBData.markThreadRead(state.uid,state.inbox.threadId);}render();}
+function choose(uid){const u=window.SBData.user(uid);if(!u){toast('Account not found.',true);return;}state.uid=uid;state.modal=null;state.route='dashboard';state.orderId=null;state.filters={query:'',status:'',category:''};state.inbox={threadId:null,query:'',filter:'all',mobileChat:false,drafts:{}};state.mobile=false;try{sessionStorage.setItem('sb-current-user',uid);}catch(e){}render();toast(term(`Вы вошли как ${u.name} (DEMO)`,`Сіз ${u.name} ретінде кірдіңіз (DEMO)`));}
 function open(type,meta={}){state.modal={type,...meta};render(true);}
 function close(){state.modal=null;render(true);}
 function tryAction(fn,success){try{let x=fn();if(success)toast(success);render(true);return x;}catch(e){toast(e.message||term('Операция не выполнена.','Әрекет орындалмады.'),true);}}
@@ -131,7 +132,7 @@ async function submitForm(form){const fd=new FormData(form), type=form.dataset.f
  case 'resolve':window.SBData.resolve(uid,val('oid'),val('resolution'));break;
  case 'review':window.SBData.review(uid,val('oid'),val('rating'),val('review'),fd.has('consent'));break;
  case 'message':{
-  window.SBData.message(uid,form.dataset.oid,val('text'));form.reset();render(true);const box=$('#chat-box');if(box)box.scrollTop=box.scrollHeight;return;
+  window.SBData.message(uid,form.dataset.oid,val('text'));delete state.inbox.drafts[form.dataset.oid];form.reset();render(true);const box=$('#chat-box');if(box)box.scrollTop=box.scrollHeight;scrollInbox();if(state.route==='messages')$('#inbox-message-input')?.focus({preventScroll:true});toast(term('Сообщение отправлено и сохранено.','Хабарлама жіберілді және сақталды.'));return;
  }
  case 'filter':state.filters={query:val('query'),status:val('status'),category:val('category')};render(true);return;
  case 'profile':window.SBData.updateProfile(uid,{name:val('name'),bio:val('bio'),available:fd.has('available'),company:val('company'),university:val('university'),field:val('field'),year:val('year')});break;
@@ -145,6 +146,9 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
  switch(action){
  case 'navigate':navigate(el.dataset.route||'dashboard');break;
  case 'open-order':navigate('order-detail',oid);break;
+ case 'inbox-thread':state.inbox.threadId=oid;state.inbox.filter='all';state.inbox.mobileChat=true;window.SBData.markThreadRead(state.uid,oid);render(true);scrollInbox();if(window.matchMedia('(max-width:760px)').matches)requestAnimationFrame(()=>$('.inbox-layout')?.scrollIntoView({behavior:'smooth',block:'start'}));break;
+ case 'inbox-back':state.inbox.mobileChat=false;render(true);break;
+ case 'inbox-filter':state.inbox.filter=el.dataset.filter==='unread'?'unread':'all';state.inbox.mobileChat=false;render(true);break;
  case 'scroll-to':{if(state.route!=='landing'){navigate('landing');}requestAnimationFrame(()=>{const t=document.getElementById(target);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});});break;}
  case 'menu':state.mobile=!state.mobile;render(true);break;
  case 'language':window.SBData.changeLanguage(isKz()?'ru':'kz');render(true);toast(term('Язык переключен.','Тіл ауыстырылды.'));break;
@@ -181,13 +185,20 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
  }
  }catch(e){toast(e.message||String(e),true);}
 }
-const SBApp={uid:()=>state.uid,route:()=>state.route,orderId:()=>state.orderId,mobileOpen:()=>state.mobile,filters:()=>state.filters,render,navigate,choose,open,reset:()=>window.SBStorage.reset()};
+const SBApp={uid:()=>state.uid,route:()=>state.route,orderId:()=>state.orderId,mobileOpen:()=>state.mobile,filters:()=>state.filters,inboxState:()=>state.inbox,render,navigate,choose,open,reset:()=>window.SBStorage.reset()};
 window.SBApp=SBApp;
 function initialize(){window.SBStorage.load();try{const selected=sessionStorage.getItem('sb-current-user');if(selected&&window.SBData.user(selected))state.uid=selected;}catch(e){}state.route='landing';render();
  document.addEventListener('click',e=>{const act=e.target.closest('[data-action]');if(act){e.preventDefault();clicked(act);return;}if(e.target.matches('[data-modal-backdrop]'))close();});
  document.addEventListener('submit',e=>{const form=e.target.closest('form[data-form]');if(!form)return;e.preventDefault();if(form.reportValidity())submitForm(form);});
  const importer=$('#json-import');importer?.addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>3_000_000)throw Error('JSON слишком большой (максимум 3 MB).');window.SBStorage.importData(await f.text());state.modal=null;state.filters={query:'',status:'',category:''};if(!window.SBData.user(state.uid))state.uid=null;render();toast(term('JSON успешно импортирован.','JSON сәтті импортталды.'));}catch(err){toast(err.message,true);}finally{importer.value='';}});
- document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.modal)close();});
+ document.addEventListener('input',e=>{
+  if(e.target.matches('[data-inbox-composer]')){const oid=e.target.closest('form')?.dataset.oid;if(oid)state.inbox.drafts[oid]=e.target.value;const count=$('#inbox-char-count');if(count)count.textContent=e.target.value.length+' / 1500';e.target.style.height='auto';e.target.style.height=Math.min(170,Math.max(68,e.target.scrollHeight))+'px';}
+  if(e.target.matches('[data-inbox-search]')){const query=e.target.value,cursor=e.target.selectionStart;state.inbox.query=query;state.inbox.mobileChat=false;render(true);const next=$('[data-inbox-search]');if(next){next.focus({preventScroll:true});try{next.setSelectionRange(cursor,cursor);}catch(err){}}}
+ });
+ document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&state.modal)close();
+  if(e.target.matches('[data-inbox-composer]')&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(e.target.value.trim())e.target.form?.requestSubmit();}
+ });
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize);else initialize();
 })();
