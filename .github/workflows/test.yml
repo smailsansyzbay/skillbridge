@@ -1,0 +1,17 @@
+name: SkillBridge frontend checks
+on:
+  push:
+  pull_request:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax validation
+        run: |
+          for f in js/*.js; do node --check "$f"; done
+      - name: Test business logic
+        run: node tests/smoke.test.cjs

@@ -1,0 +1,5 @@
+{
+  "meta": {"appName": "SkillBridge", "schemaVersion": 1, "demoMode": true, "example": true},
+  "settings": {"language": "ru", "currency": "KZT", "commissionRate": 0.15, "price": 20000, "targetWorkingDays": 3, "maxRevisions": 1},
+  "users": [], "services": [], "orders": [], "applications": [], "skillTests": [], "messages": [], "reviews": [], "notifications": [], "ledger": [], "activityLog": [], "profileConsent": []
+}
