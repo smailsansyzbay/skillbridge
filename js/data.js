@@ -63,6 +63,18 @@ function markThreadRead(actor,oid){
  save();return unseen.length;
 }
 function test(actor,sid,answers){return mutate(()=>{requireThat(hasRole(actor,'performer'),'Only performer can take skill test.');const qs=window.SBTestBank[sid];requireThat(Array.isArray(qs),'Invalid test.');requireThat(Array.isArray(answers)&&answers.length===qs.length&&answers.every(x=>Number.isInteger(x)&&x>=0&&x<=2),'Ответьте на все вопросы.');const score=qs.reduce((n,q,i)=>n+(answers[i]===q.correct?1:0),0),passed=score>=3;st().skillTests.unshift({id:id('test'),userId:actor,serviceId:sid,score,total:qs.length,passed,createdAt:now()});if(passed&&!user(actor).skills.includes(sid))user(actor).skills.push(sid);notify(actor,`Тест ${sid}: ${score}/${qs.length}, ${passed?'Passed':'Not passed'}.`);return {score,total:qs.length,passed};});}
+function requestQaCall(actor,input){
+ requireThat(hasRole(actor,'performer'),'Only specialists can request a QA demo call.');
+ requireThat(['morning','afternoon','evening'].includes(input.slot),'Select a demo time preference.');
+ const note=String(input.note||'').trim(),requestId=String(input.requestId||'');
+ requireThat(note.length<=500&&requestId.length>=8&&requestId.length<=100,'Invalid demo call request.');
+ const previous=st().activityLog.find(entry=>entry.type==='demo_qa_call'&&entry.actorId===actor&&entry.requestId===requestId);
+ if(previous)return previous;
+ const entry={id:id('qa-call'),type:'demo_qa_call',actorId:actor,orderId:null,action:'Demo QA call preference recorded',slot:input.slot,note,requestId,createdAt:now(),demo:true};
+ st().activityLog.unshift(entry);
+ if(!save()){st().activityLog.shift();throw Error('Could not save the demo request.');}
+ return entry;
+}
 function updateProfile(actor,input){return mutate(()=>{const u=user(actor);requireThat(u,'User missing.');const name=String(input.name||'').trim(),description=String(input.bio||'').trim();requireThat(name.length>=2&&name.length<=70,'Имя: 2–70 символов.');requireThat(description.length<=1000,'Описание: максимум 1000 символов.');u.name=name;u.bio=description;u.available=!!input.available;if(u.role==='business'){requireThat(String(input.company||'').trim().length>=2,'Компания обязательна.');u.company=String(input.company).trim().slice(0,120);}if(u.role==='performer'){u.field=String(input.field||'').trim().slice(0,100);}return u;});}
 function markRead(actor,idv){return mutate(()=>{const n=st().notifications.find(x=>x.id===idv&&x.userId===actor);if(n)n.read=true;return n;});}
 function markAllRead(actor){return mutate(()=>{st().notifications.filter(x=>x.userId===actor).forEach(x=>x.read=true);});}
@@ -93,5 +105,5 @@ function withdraw(actor,input){
  return entry;
 }
 function stats(uid){const d=st(),r=user(uid)?.role;const os=r==='admin'?d.orders:r==='business'?d.orders.filter(o=>o.businessId===uid):d.orders.filter(o=>o.performerId===uid);return {all:os.length,active:os.filter(o=>!['completed','refunded','cancelled'].includes(o.status)).length,complete:os.filter(o=>o.status==='completed').length,pending:os.filter(o=>['qa_review','client_review','disputed'].includes(o.status)).length,unread:d.notifications.filter(x=>x.userId===uid&&!x.read).length,payouts:d.ledger.filter(x=>x.type==='demo_performer_payout'&&(r==='performer'?order(x.orderId).performerId===uid:true)).reduce((a,b)=>a+b.amount,0),commissions:d.ledger.filter(x=>x.type==='demo_platform_commission').reduce((a,b)=>a+b.amount,0)};}
-window.SBData={wallet,withdraw,user,service,order,hasRole,visible,qualification,share,commission,priceFor,createOrder,pay,cancel,apply,assign,start,submit,qa,revision,accept,dispute,resolve,release,review,message,unreadMessages,markThreadRead,test,updateProfile,markRead,markAllRead,changeLanguage,getPortfolio,stats,id,workingDeadline};
+window.SBData={requestQaCall,wallet,withdraw,user,service,order,hasRole,visible,qualification,share,commission,priceFor,createOrder,pay,cancel,apply,assign,start,submit,qa,revision,accept,dispute,resolve,release,review,message,unreadMessages,markThreadRead,test,updateProfile,markRead,markAllRead,changeLanguage,getPortfolio,stats,id,workingDeadline};
 })();

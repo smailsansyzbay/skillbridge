@@ -20,7 +20,7 @@ const context = {
 };
 context.window = context;
 vm.createContext(context);
-for (const filename of ['seed.js', 'catalog.js', 'storage.js', 'data.js']) {
+for (const filename of ['seed.js', 'catalog.js', 'assessments.js', 'storage.js', 'data.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../js', filename), 'utf8'), context, { filename });
 }
 const { SBStorage: storage, SBData: api, SBTestBank: bank } = context;
@@ -211,3 +211,26 @@ storage.load();
 assert.equal(storage.state().services.length,31);
 assert.throws(()=>api.createOrder('b1',{serviceId:'content-plan',title:'Invalid brief details',brief:'A sufficiently long description of the expected work.',briefDetails:{goal:'x'.repeat(1501)}}));
 console.log('PASS: seven departments, 28 services, skill groups, complete workflows, structured briefs and legacy JSON enrichment.');
+
+// Assessments include complete scenario/explanation content in every UI language.
+for(const service of storage.state().services){
+ const questions=bank[service.id];
+ assert.equal(questions.length,4);
+ for(const question of questions){
+  for(const language of ['ru','kz','en']){
+   assert.ok(question.scenario[language].length>60);
+   assert.ok(question.explanation[language].length>60);
+   assert.ok(question.q[language].length>20);
+  }
+ }
+}
+assert.throws(()=>api.test('s4','content-plan',[0,1]));
+const call=api.requestQaCall('s4',{slot:'afternoon',note:'Discuss my assessment',requestId:'demo-call-test'});
+assert.equal(call.demo,true);
+assert.equal(api.requestQaCall('s4',{slot:'afternoon',note:'Discuss my assessment',requestId:'demo-call-test'}).id,call.id);
+assert.equal(storage.state().activityLog.filter(entry=>entry.type==='demo_qa_call'&&entry.actorId==='s4').length,1);
+assert.throws(()=>api.requestQaCall('b1',{slot:'morning',requestId:'customer-call-test'}));
+assert.throws(()=>api.requestQaCall('s4',{slot:'invalid',requestId:'invalid-call-test'}));
+storage.importData(JSON.stringify(storage.state()));
+assert.equal(storage.state().activityLog.find(entry=>entry.id===call.id).slot,'afternoon');
+console.log('PASS: detailed multilingual assessments, answer validation and persistent, idempotent QA demo call requests.');

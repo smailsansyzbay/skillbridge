@@ -366,3 +366,51 @@ body.workspace-active .modal h2{font-weight:500;font-size:28px}
 .order-brief-details p{font-size:14px;line-height:1.8;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 @media(max-width:1100px){.department-grid,.catalog-task-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.department-grid,.catalog-task-grid{grid-template-columns:1fr}.department-card{min-height:210px;padding:24px}.department-card-icon{margin-bottom:18px}.catalog-custom-strip{display:block;padding:24px}.catalog-custom-strip .btn{margin-top:18px}.catalog-search{padding:8px 10px;gap:8px}.catalog-search .btn{font-size:12px;padding:10px}.catalog-search input{font-size:13px}.catalog-breadcrumb strong{overflow-wrap:anywhere}.service-preview-footer{align-items:flex-start;flex-direction:column;gap:8px}}
+.qa-contact-card{display:flex;align-items:center;gap:18px;background:#e5f1df;border:1px solid #cee2c3;border-radius:18px;padding:24px;margin-bottom:26px}
+.qa-contact-icon{display:grid;place-items:center;width:48px;height:48px;background:#d5eac9;border-radius:16px;color:#608b50;flex-shrink:0}
+.qa-contact-card>div{flex:1;min-width:0}
+.app-shell .qa-contact-card h3,.qa-contact-card h3{font-size:18px;font-weight:500;line-height:1.4;margin:0 0 8px;letter-spacing:-.02em}
+.qa-contact-card p{font-size:13px;line-height:1.75;color:#7b9470;margin:0}
+.qa-whatsapp,.app-shell .qa-whatsapp{display:inline-flex;align-items:center;gap:8px;background:#2b7758;color:white;font-size:13px;border-radius:12px;padding:12px 16px;flex-shrink:0;border:0;box-shadow:none}
+.qa-whatsapp:hover,.app-shell .qa-whatsapp:hover{background:#1f6144;color:white;box-shadow:none}
+.qa-whatsapp>span{font-size:10px;opacity:.7;letter-spacing:.05em}
+.assessment-intro{padding:24px;border:1px solid #dae6d1;background:linear-gradient(120deg,#eef7e6,#f7fbf2);border-radius:18px;margin-bottom:24px}
+.assessment-intro h3{font-size:24px;line-height:1.35;font-weight:500;margin:16px 0 12px}
+.assessment-intro p{font-size:14px;line-height:1.85;color:#79916c;margin:0}
+.assessment-progress{display:flex;align-items:center;gap:18px;padding:12px 0 24px}
+.assessment-progress>span{font-size:12px;white-space:nowrap;color:#88a071}
+.assessment-progress progress{width:100%;height:7px;border:0;border-radius:20px;overflow:hidden;accent-color:#7fae54}
+.assessment-progress progress::-webkit-progress-bar{background:#e7efdF;border-radius:20px}
+.assessment-progress progress::-webkit-progress-value{background:#7fae54;border-radius:20px}
+.assessment-question{border:1px solid #dce7d3;border-radius:18px;padding:22px;margin:0 0 30px;min-width:0;background:#fcfef9}
+.assessment-question legend{padding:0 9px;font-size:17px;font-weight:500;line-height:1.6;color:#3b5b35;max-width:100%}
+.assessment-question legend>span{display:inline-block;font-size:11px;font-weight:500;background:#e2efd6;color:#7c9b5e;border-radius:8px;padding:4px 8px;margin-right:6px;vertical-align:middle}
+.assessment-scenario{font-size:14px;line-height:1.9;color:#819672;padding:0 2px;margin:6px 0 22px}
+.assessment-options{display:grid;gap:10px}
+.assessment-options label{display:flex;gap:12px;align-items:flex-start;border:1px solid #dfe8d7;border-radius:12px;padding:16px;background:white;cursor:pointer;font-size:14px;line-height:1.7;color:#58734c;transition:border-color .15s,background .15s}
+.assessment-options label:hover{background:#f1f8e9;border-color:#b8d39d}
+.assessment-options label:has(input:checked){background:#e8f3da;border-color:#92b86d;color:#3a6130}
+.assessment-options input[type=radio]{margin:5px 0 0;accent-color:#6c9d43;flex-shrink:0;width:16px;height:16px}
+.assessment-options label:focus-within{outline:2px solid #9ac76e;outline-offset:2px}
+.assessment-result{display:flex;align-items:center;gap:24px;background:#e5f2d9;border:1px solid #cee2bc;padding:25px;border-radius:18px;margin-bottom:22px}
+.assessment-result.retry{background:#f3f2df;border-color:#e3dfb9}
+.assessment-score{font-size:34px;letter-spacing:-.04em;color:#5d853f;white-space:nowrap}
+.assessment-result h3{font-size:23px;font-weight:500;margin:0 0 10px}
+.assessment-result p{font-size:14px;line-height:1.8;margin:0;color:#81956f}
+.assessment-review details{border-bottom:1px solid #e0e9d6;padding:18px 0}
+.assessment-review summary{display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.7;cursor:pointer;color:#567449}
+.assessment-review summary .tag{flex-shrink:0}
+.assessment-review details>div{padding:20px 12px 0;font-size:14px;line-height:1.8;color:#839672}
+.assessment-review strong{font-size:12px;font-weight:500;color:#5a784c}
+.assessment-explanation{padding:16px;background:#edf5e5;border-radius:12px}
+.qa-chat-preview{background:#edf3e6;border:1px solid #d6e4c9;border-radius:18px;overflow:hidden;margin-bottom:20px}
+.qa-chat-person{display:flex;align-items:center;gap:12px;background:#275c42;color:#f1ffe9;padding:20px}
+.qa-chat-person>span{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#417558;color:#cceaba;flex-shrink:0}
+.qa-chat-person strong{font-size:15px;font-weight:500}
+.qa-chat-person small{display:block;color:#a7c9ad;font-size:11px;margin-top:4px}
+.qa-chat-preview>p{background:#fcfff7;border-radius:0 14px 14px 14px;margin:22px;padding:20px;font-size:14px;line-height:1.85;color:#769261}
+.qa-saved{text-align:center;padding:20px 0}
+.qa-saved>span{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#e6f2d9;color:#82a95b;margin:0 auto 24px}
+.qa-saved h3{font-size:23px;font-weight:500}
+.qa-saved p{font-size:14px;line-height:1.8;color:#80956e}
+@media(max-width:650px){.qa-contact-card{flex-wrap:wrap;padding:20px;gap:14px}.qa-contact-card>div{flex-basis:calc(100% - 65px)}.qa-whatsapp{margin-left:62px}.assessment-question{padding:14px}.assessment-question legend{font-size:16px;padding:0 5px}.assessment-options label{padding:13px;font-size:13px}.assessment-scenario{font-size:13px}.assessment-intro{padding:20px}.assessment-intro h3{font-size:21px}.assessment-result{gap:16px;padding:20px}.assessment-score{font-size:29px}.assessment-result h3{font-size:20px}.qa-chat-preview>p{margin:15px;padding:16px}}

@@ -46,6 +46,12 @@ The rewards page shows earned funds, available balance, pending operator credits
 
 Back and Forward buttons in the workspace follow in-app page history, including individual order pages. Browser navigation buttons use the same history. Opening a modal does not create a page entry, and navigating after going back starts a new forward branch. These controls change the page being viewed and do not undo saved actions.
 
+## Skills assessment and QA contact
+
+Each assessment presents four practical scenarios, detailed answer choices and live completion progress. After submitting, the specialist sees a score and an explanation for every question, including the recommended approach where an answer was incorrect. Three correct answers are needed to pass. Questions, scenarios and explanations are available in Russian, Kazakh and English. Previously passed qualifications remain valid.
+
+The WhatsApp QA button opens a local conversation mockup. Specialists can record a preferred time of day and a discussion topic. The preference persists in the JSON activity log. No WhatsApp link is opened, no message is sent and no real call is booked.
+
 ## Features
 
 - Landing page, service catalog and responsive dashboards for customer, performer and administrator.
@@ -85,6 +91,7 @@ index.html                 HTML entry point
 css/styles.css             Responsive UI and animation
 js/seed.js                 Fictional users, microtasks, skills tests
 js/catalog.js              Departments, task definitions and department tests
+js/assessments.js          Detailed multilingual assessment scenarios
 js/storage.js              State, localStorage, JSON import/export
 js/data.js                 Order lifecycle and domain checks
 js/ui.js                   Page templates, dashboards, navigation
