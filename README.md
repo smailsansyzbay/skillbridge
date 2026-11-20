@@ -4,15 +4,13 @@ SkillBridge is an interactive frontend demo of a managed marketplace for small, 
 
 **All users, transactions, reviews and displayed sample cases are fictional demonstration data. No real money is processed. This is not a secure production marketplace.**
 
-## Account entry
+## Demo entry
 
-The public home page offers Performer and Customer entry. Each opens registration or email/password sign-in for the selected role. Accounts persist in the current browser and JSON exports. Passwords use salted PBKDF2-SHA256 with 210,000 iterations. Use demo credentials only.
+The home page offers Performer and Customer entry. Each opens demo profiles for that role. Start Demonstration opens separate Customer and Performer groups. Select a profile to enter immediately, without registration, passwords or email verification.
 
-Sign out from the workspace before entering another account. Reloading requires signing in again. Seed profiles have no login credentials. Existing browser profiles without credentials remain in the dataset but cannot be selected as public login accounts.
+A subtle Administrator link at the bottom of the home page opens the local administrative demo workspace. All demo accounts are publicly accessible and intended for fictional data.
 
-A subtle Administrator link at the bottom of the home page opens the local administrative demo workspace. It is publicly accessible and has no password. This entry is intended for fictional demonstration data. Production operator access requires backend authentication, server-side authorization and storage.
-
-Open index.html in a modern browser, or serve the folder using a local static server. Web Crypto requires a secure context such as HTTPS or localhost.
+Existing local JSON records remain available, including profiles created in earlier versions. Login credentials are no longer used. Open index.html in a modern browser or serve the folder using a local static server.
 
 ## Three standard services
 
@@ -27,7 +25,7 @@ Nominal performer share: **85% = 17 000 ₸**. Platform transaction commission: 
 ## Features
 
 - Landing page, service catalog and responsive dashboards for customer, performer and administrator.
-- Role-specific registration and local email/password sign-in, profile editing and sign-out.
+- Grouped demo profile selection, profile editing and return to the home page.
 - Task-specific skill tests and matching by qualification and availability.
 - Structured order creation, order statuses, performer applications and admin assignment.
 - Demo payments, task delivery, QA, one revision, dispute/refund decisions, acceptance and non-duplicating demo payouts.
@@ -85,7 +83,7 @@ node --check js/app.js
 node tests/smoke.test.cjs
 ```
 
-The smoke test checks price/commission, permissions, payment and assignment, qualification, task lifecycle, QA, review, duplicate payouts and JSON import/export. Browser testing covers registration, login, logout and blocked public administrator selection. **Passing smoke tests does not certify every visual control or production security.**
+The smoke test checks price/commission, permissions, payment and assignment, qualification, task lifecycle, QA, review, duplicate payouts and JSON import/export. Browser testing covers grouped profile selection and access to each demo role. **Passing smoke tests does not certify every visual control or production security.**
 
 ## Publish with GitHub Pages (optional)
 
