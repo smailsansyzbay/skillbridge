@@ -26,20 +26,20 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  switch(m.type){
  case 'account':{
   title=term('Выберите демонстрационный аккаунт','Демо аккаунтты таңдаңыз');
-  const roleName={business:term('Компания','Компания'),student:term('Студент','Студент'),admin:term('Администратор','Әкімші')};
+  const roleName={business:ui().t('roleBusiness'),performer:ui().t('rolePerformer'),admin:ui().t('roleAdmin')};
   body=warn('<strong>DEMO ONLY:</strong> '+term('это не защищенная авторизация; данные видны в данном браузере.','бұл қорғалған авторизация емес; деректер осы браузерде сақталады.'))+
-  d().users.map(a=>`<button type="button" class="select-account" data-action="switch-account" data-uid="${esc(a.id)}"><span class="avatar">${esc(a.name.slice(0,2))}</span><span class="name"><strong>${esc(a.name)}</strong><small>${esc(roleName[a.role])} · ${esc(a.company||a.university||'SkillBridge')}</small></span><span>→</span></button>`).join('')+
+  d().users.map(a=>`<button type="button" class="select-account" data-action="switch-account" data-uid="${esc(a.id)}"><span class="avatar">${esc(a.name.slice(0,2))}</span><span class="name"><strong>${esc(a.name)}</strong><small>${esc(roleName[a.role])} · ${esc(a.company||ui().loc(a.field)||'SkillBridge')}</small></span><span>→</span></button>`).join('')+
   `<div class="actions" style="margin-top:18px"><button type="button" class="btn btn-soft" data-action="open-register">＋ ${term('Создать демо-профиль','Демо профиль жасау')}</button></div>`; break;
  }
  case 'register':{
   title=term('Создать демо-профиль','Демо профиль жасау');body=warn(term('Локальный учебный аккаунт без пароля. Не вводите личные документы.','Құпиясөзсіз жергілікті оқу аккаунты. Құжат енгізбеңіз.'))+
   `<form data-form="register" class="form-grid">${formField('name',term('Имя','Аты'),'','text','required minlength="2" maxlength="70"')}
-  <div class="field"><label for="f-role">${term('Роль','Рөл')}</label><select id="f-role" name="role"><option value="business">SME / Business</option><option value="student">Student</option></select></div>
-  ${formField('company',term('Компания / Университет','Компания / Университет'),'','text','required minlength="2" maxlength="120"')}
+  <div class="field"><label for="f-role">${term('Роль','Рөл')}</label><select id="f-role" name="role"><option value="performer">${esc(ui().t('rolePerformer'))}</option><option value="business">${esc(ui().t('roleBusiness'))}</option></select></div>
+  <div data-register-company hidden>${formField('company',term('Название компании','Компания атауы'),'','text','disabled minlength="2" maxlength="120"')}</div>
   ${textarea('bio',term('Описание (по желанию)','Сипаттама (міндетті емес)'),'','maxlength="1000"')}${actions(term('Создать аккаунт','Аккаунт жасау'))}</form>`;break;
  }
  case 'order':{
-  const srv=service(m.sid);if(!srv){return '';}title=term('Новый Micro-Case','Жаңа Micro-Case');wide=true;
+  const srv=service(m.sid);if(!srv){return '';}title=term('Новое микро-задание','Жаңа шағын тапсырма');wide=true;
   body=`<div class="info"><strong>${esc(ui().loc(srv.title))}</strong> · ${money(srv.price)} · ${term('срок 3 рабочих дня','мерзім 3 жұмыс күні')}</div>
   <form data-form="create-order" class="form-grid"><input type="hidden" name="sid" value="${esc(srv.id)}">
   ${formField('title',term('Название задания','Тапсырма атауы'),srv.id==='catalog'?term('Подготовить карточки новых товаров','Жаңа тауар карточкаларын дайындау'):srv.id==='excel'?term('Привести данные в порядок','Деректерді реттеу'):term('Сравнить пять конкурентов','Бес бәсекелесті салыстыру'),'text','required minlength="5" maxlength="130"')}
@@ -51,7 +51,7 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  }
  case 'pay':{
   const o=getOrder(m.oid);title=term('Подтвердить демо-оплату','Демо төлемді растау');
-  body=`<div class="surface" style="margin-bottom:14px"><h3>${esc(o.title)}</h3><div class="metric-line"><span>SME GMV</span><strong>${money(window.SBData.priceFor(o))}</strong></div><div class="metric-line"><span>${term('Студент 85%','Студент 85%')}</span><strong>${money(window.SBData.share(o))}</strong></div><div class="metric-line"><span>SkillBridge 15%</span><strong>${money(window.SBData.commission(o))}</strong></div></div>
+  body=`<div class="surface" style="margin-bottom:14px"><h3>${esc(o.title)}</h3><div class="metric-line"><span>${term('Сумма заказа','Тапсырыс сомасы')}</span><strong>${money(window.SBData.priceFor(o))}</strong></div><div class="metric-line"><span>${ui().t('performerShare')+' · 85%'}</span><strong>${money(window.SBData.share(o))}</strong></div><div class="metric-line"><span>SkillBridge 15%</span><strong>${money(window.SBData.commission(o))}</strong></div></div>
  ${warn('<strong>DEMO ONLY — No real money is transferred.</strong><br>'+term('Операция создаст запись в JSON. Ни карта, ни банковский счет не используются.','Тек JSON ішінде жазба жасалады. Банк карта қажет емес.'))}
  <form data-form="pay"><input type="hidden" name="oid" value="${esc(o.id)}">${actions(term('Подтвердить демо-оплату','Демо төлемді растау'))}</form>`;break;
  }
@@ -61,10 +61,10 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  ${window.SBTestBank[m.sid].map((q,i)=>`<div class="test-question"><strong>${i+1}. ${esc(ui().loc(q.q))}</strong>${q.a.map((a,j)=>`<label><input type="radio" name="q${i}" value="${j}" required> ${esc(ui().loc(a))}</label>`).join('')}</div>`).join('')}${actions(term('Завершить тест','Тестті аяқтау'))}</form>`;break;
  }
  case 'assign':{
-  const o=getOrder(m.oid);title=term('Назначить студента','Студент тағайындау');
-  const students=d().users.filter(x=>x.role==='student'&&x.available&&window.SBData.qualification(x.id,o.serviceId));
+  const o=getOrder(m.oid);title=term('Назначить исполнителя','Орындаушыны тағайындау');
+  const performers=d().users.filter(x=>x.role==='performer'&&x.available&&window.SBData.qualification(x.id,o.serviceId));
   body=`<div class="info">${esc(o.id)} · ${esc(ui().loc(service(o.serviceId)?.title))}</div>
- ${students.length?`<form data-form="assign"><input type="hidden" name="oid" value="${esc(o.id)}"><div class="field"><label>${term('Квалифицированный студент','Білікті студент')}</label><select name="studentId" required>${students.map(x=>`<option value="${esc(x.id)}">${esc(x.name)} · ${esc(x.university)}</option>`).join('')}</select></div>${actions(term('Назначить','Тағайындау'))}</form>`:warn(term('Нет доступных студентов, прошедших тест. Переключитесь на студента и пройдите проверку навыков.','Тесті өткен қолжетімді студент жоқ.'))}`;break;
+ ${performers.length?`<form data-form="assign"><input type="hidden" name="oid" value="${esc(o.id)}"><div class="field"><label>${term('Квалифицированный исполнитель','Білікті орындаушы')}</label><select name="performerId" required>${performers.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}${x.field?' · '+esc(ui().loc(x.field)):''}</option>`).join('')}</select></div>${actions(term('Назначить','Тағайындау'))}</form>`:warn(term('Нет доступных исполнителей с пройденным тестом по этой услуге.','Тесттен өткен қолжетімді орындаушы жоқ.'))}`;break;
  }
  case 'submit':{
   const o=getOrder(m.oid);title=term('Отправить результат работы','Нәтижені жіберу');wide=true;
@@ -73,7 +73,7 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  }
  case 'qa':{
   const o=getOrder(m.oid),srv=service(o.serviceId);title=term('Проверка качества QA','Сапаны тексеру QA');wide=true;
-  body=`<div class="info"><strong>${esc(o.id)}</strong> · ${esc(o.title)}</div><div class="surface" style="margin-top:15px"><h3>${term('Результат студента','Студент нәтижесі')}</h3><p style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(o.delivery?.text||'')}</p></div>
+  body=`<div class="info"><strong>${esc(o.id)}</strong> · ${esc(o.title)}</div><div class="surface" style="margin-top:15px"><h3>${term('Результат исполнителя','Орындаушының нәтижесі')}</h3><p style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(o.delivery?.text||'')}</p></div>
  <form data-form="qa"><input type="hidden" name="oid" value="${esc(o.id)}"><p><strong>${term('Проверка требований','Талаптарды тексеру')}</strong></p>${(srv.criteria[isKz()?'kz':'ru']||srv.criteria.ru).map((v,i)=>`<label class="check-row"><input type="checkbox" name="check${i}" value="yes"> ${esc(v)}</label>`).join('')}
  <div class="field" style="margin-top:15px"><label>${term('Решение','Шешім')}</label><select name="verdict"><option value="pass">${term('Одобрить и отправить клиенту','Қабылдап клиентке жіберу')}</option><option value="reject">${term('Вернуть на исправление','Түзетуге қайтару')}</option></select></div><div class="field" style="margin-top:14px"><label>${term('Комментарий QA','QA пікірі')}</label><textarea name="notes" rows="3" maxlength="1200" placeholder="${term('Причина отказа: не менее 12 символов','Бас тарту себебі: 12 таңба')}"></textarea></div>${actions(term('Сохранить решение QA','QA шешімін сақтау'))}</form>`;break;
  }
@@ -94,12 +94,12 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  return modal(title,body,wide);
 }
 function scrollInbox(){const feed=$('#inbox-chat-feed');if(feed)feed.scrollTop=feed.scrollHeight;}
-function show(){const root=$('#app');if(!root)return;let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():'');document.body.classList.toggle('modal-active',!!state.modal);if(state.route==='messages')requestAnimationFrame(scrollInbox);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
+function show(){const root=$('#app');if(!root)return;document.documentElement.lang=isKz()?'kk':'ru';document.title=term('SkillBridge — Микро-задания для бизнеса и исполнителей','SkillBridge — Бизнес пен орындаушыларға арналған шағын тапсырмалар');let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():'');document.body.classList.toggle('modal-active',!!state.modal);if(state.route==='messages')requestAnimationFrame(scrollInbox);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
 function render(keepScroll=false){let scroll=window.scrollY;show();if(!keepScroll)window.scrollTo(0,0);else window.scrollTo(0,scroll);}
 function navigate(route,oid=null){state.modal=null;if(route==='landing'){state.route='landing';state.orderId=null;state.mobile=false;render();return;}
  if(!getUser()){state.modal={type:'account'};state.route='landing';render();return;}
  const role=getUser().role;
- const allowed={business:['dashboard','catalog','orders','messages','notifications','profile','order-detail','faq','about'],student:['dashboard','opportunities','mytasks','screening','portfolio','earnings','messages','notifications','profile','order-detail','faq','about'],admin:['dashboard','admin-orders','admin-students','qa','disputes','finance','messages','notifications','profile','order-detail','faq','about','data']};
+ const allowed={business:['dashboard','catalog','orders','messages','notifications','profile','order-detail','faq','about'],performer:['dashboard','opportunities','mytasks','screening','portfolio','earnings','messages','notifications','profile','order-detail','faq','about'],admin:['dashboard','admin-orders','admin-performers','qa','disputes','finance','messages','notifications','profile','order-detail','faq','about','data']};
  if(!allowed[role].includes(route)){toast(term('Этот раздел не доступен выбранной роли.','Бұл бөлім осы рөлге қолжетімсіз.'),true);return;}
  state.route=route;state.orderId=oid||state.orderId;state.mobile=false;state.filters={query:'',status:'',category:''};if(route==='messages'){const available=d().orders.filter(o=>window.SBData.visible(o,state.uid)).sort((a,b)=>new Date(b.updatedAt||b.createdAt)-new Date(a.updatedAt||a.createdAt));if(!available.some(o=>o.id===state.inbox.threadId))state.inbox.threadId=available[0]?.id||null;if(state.inbox.threadId)window.SBData.markThreadRead(state.uid,state.inbox.threadId);}render();}
 function choose(uid){const u=window.SBData.user(uid);if(!u){toast('Account not found.',true);return;}state.uid=uid;state.modal=null;state.route='dashboard';state.orderId=null;state.filters={query:'',status:'',category:''};state.inbox={threadId:null,query:'',filter:'all',mobileChat:false,drafts:{}};state.mobile=false;try{sessionStorage.setItem('sb-current-user',uid);}catch(e){}render();toast(term(`Вы вошли как ${u.name} (DEMO)`,`Сіз ${u.name} ретінде кірдіңіз (DEMO)`));}
@@ -108,13 +108,13 @@ function close(){state.modal=null;render(true);}
 function tryAction(fn,success){try{let x=fn();if(success)toast(success);render(true);return x;}catch(e){toast(e.message||term('Операция не выполнена.','Әрекет орындалмады.'),true);}}
 const success=msg=>toast(msg||term('Действие сохранено в JSON.','Әрекет JSON-ға сақталды.'));
 const confirmAction=(question,fn)=>{if(window.confirm(question))return tryAction(fn,term('Готово','Дайын'));};
-function certificate(oid){const o=getOrder(oid);if(o.status!=='completed'||o.studentId!==state.uid)throw Error('Certificate available after completion for the assigned student only.');const stu=getUser();const title=ui().loc(service(o.serviceId)?.title)||'';const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 580"><rect width="960" height="580" fill="#101a2b"/><rect x="30" y="30" width="900" height="520" fill="none" stroke="#14b8a6" stroke-width="4"/><text x="70" y="122" font-size="38" fill="#14b8a6" font-family="Arial" font-weight="bold">SkillBridge</text><text x="70" y="190" font-size="17" fill="#bedad7" font-family="Arial">DEMONSTRATION ONLY — NOT AN ACCREDITED QUALIFICATION</text><text x="70" y="280" font-size="37" fill="#fff" font-family="Arial" font-weight="bold">${esc(stu.name)}</text><text x="70" y="336" font-size="22" fill="#ddd" font-family="Arial">completed a demo Micro-Case</text><text x="70" y="378" font-size="26" fill="#14b8a6" font-family="Arial">${esc(title)}</text><text x="70" y="465" font-size="16" fill="#d3dce2" font-family="Arial">${esc(o.id)}  |  ${new Date(o.updatedAt).toISOString().slice(0,10)}  |  DEMO</text></svg>`;const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));let a=document.createElement('a');a.href=url;a.download=`SkillBridge-DEMO-${o.id}.svg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);toast(term('Демо-сертификат сохранен в SVG.','Демо сертификат SVG ретінде сақталды.'));}
+function certificate(oid){const o=getOrder(oid);if(o.status!=='completed'||o.performerId!==state.uid)throw Error('Certificate available after completion for the assigned performer only.');const stu=getUser();const title=ui().loc(service(o.serviceId)?.title)||'';const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 580"><rect width="960" height="580" fill="#101a2b"/><rect x="30" y="30" width="900" height="520" fill="none" stroke="#14b8a6" stroke-width="4"/><text x="70" y="122" font-size="38" fill="#14b8a6" font-family="Arial" font-weight="bold">SkillBridge</text><text x="70" y="190" font-size="17" fill="#bedad7" font-family="Arial">DEMONSTRATION ONLY — NOT AN ACCREDITED QUALIFICATION</text><text x="70" y="280" font-size="37" fill="#fff" font-family="Arial" font-weight="bold">${esc(stu.name)}</text><text x="70" y="336" font-size="22" fill="#ddd" font-family="Arial">completed a demo Micro-Case</text><text x="70" y="378" font-size="26" fill="#14b8a6" font-family="Arial">${esc(title)}</text><text x="70" y="465" font-size="16" fill="#d3dce2" font-family="Arial">${esc(o.id)}  |  ${new Date(o.updatedAt).toISOString().slice(0,10)}  |  DEMO</text></svg>`;const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));let a=document.createElement('a');a.href=url;a.download=`SkillBridge-DEMO-${o.id}.svg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);toast(term('Демо-сертификат сохранен в SVG.','Демо сертификат SVG ретінде сақталды.'));}
 async function prepareFile(file){if(!file)return null;if(file.size>5_000_000)throw Error(term('Файл больше 5 MB; выберите меньший демо-файл.','Файл 5 MB-тен үлкен.'));const v={name:file.name,size:file.size,type:file.type||'application/octet-stream',demo:true};if(file.size<=131072&&(/\.(txt|md|csv|tsv|json)$/i.test(file.name)||file.type.startsWith('text/'))){v.content=await file.text();}return v;}
 async function submitForm(form){const fd=new FormData(form), type=form.dataset.form;const val=k=>str(fd.get(k)||'').trim();const uid=state.uid;
  try{
  switch(type){
  case 'register':{
-  const role=val('role'),name=val('name'),org=val('company');if(!['student','business'].includes(role))throw Error('Invalid role');if(name.length<2||org.length<2)throw Error('Enter your name and organization.');const id=window.SBData.id(role==='student'?'s':'b');const u={id,role,name,company:role==='business'?org:'',university:role==='student'?org:'',field:role==='student'?'General':'',year:'',bio:val('bio').slice(0,1000),skills:[],available:true,demo:true};d().users.push(u);window.SBStorage.save();choose(id);return;
+  const role=val('role'),name=val('name'),org=val('company');if(!['performer','business'].includes(role))throw Error('Invalid role');if(name.length<2||name.length>70)throw Error(term('Введите имя длиной 2–70 символов.','Есім 2–70 таңбадан тұруы керек.'));if(role==='business'&&(org.length<2||org.length>120))throw Error(term('Введите название компании (2–120 символов).','Компания атауын енгізіңіз (2–120 таңба).'));const id=window.SBData.id(role==='performer'?'s':'b');const u={id,role,name,company:role==='business'?org:'',field:'',bio:val('bio').slice(0,1000),skills:[],available:true,demo:true};d().users.push(u);window.SBStorage.save();choose(id);return;
  }
  case 'create-order':{
   const file=await prepareFile(fd.get('source') instanceof File&&fd.get('source').size?fd.get('source'):null);
@@ -124,7 +124,7 @@ async function submitForm(form){const fd=new FormData(form), type=form.dataset.f
  case 'skill-test':{
   const sid=val('sid'),qs=window.SBTestBank[sid];const answers=qs.map((q,i)=>fd.has('q'+i)?Number(fd.get('q'+i)):-1);const r=window.SBData.test(uid,sid,answers);state.modal=null;render();toast(`${r.passed?'✓ Passed':'✕ Not passed'} · ${r.score}/${r.total}`,!r.passed);return;
  }
- case 'assign':window.SBData.assign(uid,val('oid'),val('studentId'));break;
+ case 'assign':window.SBData.assign(uid,val('oid'),val('performerId'));break;
  case 'submit-work':{let file=await prepareFile(fd.get('file') instanceof File&&fd.get('file').size?fd.get('file'):null);window.SBData.submit(uid,val('oid'),{text:val('text'),file});break;}
  case 'qa':{const sid=getOrder(val('oid')).serviceId,count=service(sid).criteria.ru.length;let passed=val('verdict')==='pass',checks=Array.from({length:count},(_,i)=>fd.has('check'+i));window.SBData.qa(uid,val('oid'),passed,val('notes'),checks);break;}
  case 'revision':window.SBData.revision(uid,val('oid'),val('reason'));break;
@@ -135,7 +135,7 @@ async function submitForm(form){const fd=new FormData(form), type=form.dataset.f
   window.SBData.message(uid,form.dataset.oid,val('text'));delete state.inbox.drafts[form.dataset.oid];form.reset();render(true);const box=$('#chat-box');if(box)box.scrollTop=box.scrollHeight;scrollInbox();if(state.route==='messages')$('#inbox-message-input')?.focus({preventScroll:true});toast(term('Сообщение отправлено и сохранено.','Хабарлама жіберілді және сақталды.'));return;
  }
  case 'filter':state.filters={query:val('query'),status:val('status'),category:val('category')};render(true);return;
- case 'profile':window.SBData.updateProfile(uid,{name:val('name'),bio:val('bio'),available:fd.has('available'),company:val('company'),university:val('university'),field:val('field'),year:val('year')});break;
+ case 'profile':window.SBData.updateProfile(uid,{name:val('name'),bio:val('bio'),available:fd.has('available'),company:val('company'),field:val('field')});break;
  default:throw Error('Unknown form: '+type);
  }
  state.modal=null;render(true);success();
@@ -191,6 +191,15 @@ function initialize(){window.SBStorage.load();try{const selected=sessionStorage.
  document.addEventListener('click',e=>{const act=e.target.closest('[data-action]');if(act){e.preventDefault();clicked(act);return;}if(e.target.matches('[data-modal-backdrop]'))close();});
  document.addEventListener('submit',e=>{const form=e.target.closest('form[data-form]');if(!form)return;e.preventDefault();if(form.reportValidity())submitForm(form);});
  const importer=$('#json-import');importer?.addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>3_000_000)throw Error('JSON слишком большой (максимум 3 MB).');window.SBStorage.importData(await f.text());state.modal=null;state.filters={query:'',status:'',category:''};if(!window.SBData.user(state.uid))state.uid=null;render();toast(term('JSON успешно импортирован.','JSON сәтті импортталды.'));}catch(err){toast(err.message,true);}finally{importer.value='';}});
+ document.addEventListener('change',e=>{
+  if(!e.target.matches('form[data-form="register"] select[name="role"]'))return;
+  const company=e.target.form.querySelector('[data-register-company]');
+  const isBusiness=e.target.value==='business';
+  company.hidden=!isBusiness;
+  const field=company.querySelector('input');
+  field.disabled=!isBusiness;
+  field.required=isBusiness;
+ });
  document.addEventListener('input',e=>{
   if(e.target.matches('[data-inbox-composer]')){const oid=e.target.closest('form')?.dataset.oid;if(oid)state.inbox.drafts[oid]=e.target.value;const count=$('#inbox-char-count');if(count)count.textContent=e.target.value.length+' / 1500';e.target.style.height='auto';e.target.style.height=Math.min(170,Math.max(68,e.target.scrollHeight))+'px';}
   if(e.target.matches('[data-inbox-search]')){const query=e.target.value,cursor=e.target.selectionStart;state.inbox.query=query;state.inbox.mobileChat=false;render(true);const next=$('[data-inbox-search]');if(next){next.focus({preventScroll:true});try{next.setSelectionRange(cursor,cursor);}catch(err){}}}

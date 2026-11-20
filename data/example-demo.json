@@ -1,5 +1,7 @@
 {
-  "meta": {"appName": "SkillBridge", "schemaVersion": 1, "demoMode": true, "example": true},
+  "meta": {"appName": "SkillBridge", "schemaVersion": 2, "demoMode": true, "example": true},
   "settings": {"language": "ru", "currency": "KZT", "commissionRate": 0.15, "price": 20000, "targetWorkingDays": 3, "maxRevisions": 1},
-  "users": [], "services": [], "orders": [], "applications": [], "skillTests": [], "messages": [], "reviews": [], "notifications": [], "ledger": [], "activityLog": [], "profileConsent": []
+  "users": [
+    {"id": "p-example", "role": "performer", "name": "Меруерт К.", "company": "", "field": "Электронные таблицы", "bio": "Работаю с табличными данными.", "skills": [], "available": true, "demo": true}
+  ], "services": [], "orders": [], "applications": [], "skillTests": [], "messages": [], "reviews": [], "notifications": [], "ledger": [], "activityLog": [], "profileConsent": []
 }

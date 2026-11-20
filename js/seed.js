@@ -3,17 +3,17 @@
 'use strict';
 const date=(hours=0)=>new Date(Date.now()+hours*3600e3).toISOString();
 window.SBSeed={
- schemaVersion:1,
- meta:{appName:'SkillBridge',schemaVersion:1,demoMode:true,createdAt:date(),lastModified:date()},
+ schemaVersion:2,
+ meta:{appName:'SkillBridge',schemaVersion:2,demoMode:true,createdAt:date(),lastModified:date()},
  settings:{language:'ru',currency:'KZT',commissionRate:.15,price:20000,targetWorkingDays:3,maxRevisions:1},
  users:[
-  {id:'b1',role:'business',name:'Айгерим Н.',company:'Alma Market',university:'',field:'Retail / e-commerce',year:'',bio:'Небольшой магазин товаров для дома в Алматы.',skills:[],available:true,demo:true},
-  {id:'b2',role:'business',name:'Данияр К.',company:'Orbit Store',university:'',field:'Online retail',year:'',bio:'Онлайн-магазин электроники.',skills:[],available:true,demo:true},
-  {id:'s1',role:'student',name:'Алия М.',company:'',university:'KBTU',field:'Management',year:'3',bio:'Люблю аккуратные каталоги, работу с таблицами и реальные задачи.',skills:['catalog'],available:true,demo:true},
-  {id:'s2',role:'student',name:'Темирлан А.',company:'',university:'SDU',field:'Finance',year:'2',bio:'Уверенно работаю с данными и Excel.',skills:['excel'],available:true,demo:true},
-  {id:'s3',role:'student',name:'Асель Р.',company:'',university:'Narxoz',field:'Marketing',year:'4',bio:'Исследую локальные бренды и их предложения.',skills:['research'],available:true,demo:true},
-  {id:'s4',role:'student',name:'Ержан Б.',company:'',university:'IITU',field:'Information Systems',year:'2',bio:'Хочу получить первый коммерческий проект.',skills:[],available:true,demo:true},
-  {id:'a1',role:'admin',name:'SkillBridge Manager',company:'SkillBridge',university:'',field:'Operations',year:'',bio:'Демо-оператор платформы.',skills:[],available:true,demo:true}
+  {id:'b1',role:'business',name:'Айгерим Н.',company:'Alma Market',field:'Retail / e-commerce',bio:'Небольшой магазин товаров для дома в Алматы.',skills:[],available:true,demo:true},
+  {id:'b2',role:'business',name:'Данияр К.',company:'Orbit Store',field:'Online retail',bio:'Онлайн-магазин электроники.',skills:[],available:true,demo:true},
+  {id:'s1',role:'performer',name:'Алия М.',company:'',field:'Товарные каталоги',bio:'Домохозяйка. Веду семейный бюджет и структурирую данные для товарных каталогов.',skills:['catalog'],available:true,demo:true},
+  {id:'s2',role:'performer',name:'Темирлан А.',company:'',field:'Электронные таблицы',bio:'Пенсионер, бывший бухгалтер. Пенсионер, бывший бухгалтер. Уверенно работаю с данными и Excel.',skills:['excel'],available:true,demo:true},
+  {id:'s3',role:'performer',name:'Асель Р.',company:'',field:'Исследование рынка',bio:'Фриланс-аналитик. Фриланс-аналитик. Исследую локальные бренды и их предложения.',skills:['research'],available:true,demo:true},
+  {id:'s4',role:'performer',name:'Ержан Б.',company:'',field:'Работа с данными',bio:'Студент. Изучаю обработку данных и ищу небольшие задания.',skills:[],available:true,demo:true},
+  {id:'a1',role:'admin',name:'SkillBridge Manager',company:'SkillBridge',field:'Operations',bio:'Демо-оператор платформы.',skills:[],available:true,demo:true}
  ],
  services:[
   {id:'catalog',icon:'package',title:{ru:'Товарный каталог',kz:'Тауар каталогы'},subtitle:{ru:'До 20 структурированных карточек',kz:'20-ға дейін құрылымдалған карточка'},detail:{ru:'Подготовим названия, характеристики, описания и цены по вашим материалам в удобном формате.',kz:'Сіз ұсынған ақпараттан атаулар, сипаттамалар, бағалар мен қасиеттерді реттейміз.'},deliverable:{ru:'Таблица CSV / каталог до 20 позиций',kz:'20 позицияға дейінгі CSV каталог'},criteria:{ru:['Не более 20 позиций из исходного задания','Заполнены обязательные поля и SKU','Цены соответствуют данным заказчика','Формат пригоден для импорта'],kz:['20 позициядан аспайды','Міндетті өрістер мен SKU толтырылған','Бағалар берілген деректерге сәйкес','Импортқа жарамды пішім']},price:20000,category:'catalog'},
@@ -21,12 +21,12 @@ window.SBSeed={
   {id:'research',icon:'search',title:{ru:'Обзор конкурентов',kz:'Бәсекелестерге шолу'},subtitle:{ru:'5 компаний и ссылки на источники',kz:'5 компания және дереккөз сілтемелері'},detail:{ru:'Соберем публичную информацию о пяти релевантных конкурентах и подготовим сравнение.',kz:'Бес бәсекелес туралы ашық ақпарат жинап, салыстыру дайындаймыз.'},deliverable:{ru:'Таблица 5 конкурентов + резюме',kz:'5 бәсекелестің кестесі және қорытынды'},criteria:{ru:['Выбраны 5 подходящих конкурентов','Присутствуют проверяемые ссылки','Поля сравнения заполнены','Есть краткий вывод и неопределенности'],kz:['5 сәйкес бәсекелес таңдалды','Тексерілетін сілтемелер бар','Салыстыру өрістері толтырылған','Қысқаша қорытынды берілді']},price:20000,category:'research'}
  ],
  orders:[
-  {id:'SB-1001',serviceId:'excel',businessId:'b2',studentId:'s2',title:'Обновить прайс-лист магазина',brief:'Выровнять 60 демонстрационных строк прайса; отметить пропуски и дубликаты.',notes:'Формат результата: CSV + изменения.',inputFile:null,status:'in_progress',demoPayment:true,revisionCount:0,deadline:date(48),createdAt:date(-15),updatedAt:date(-4),delivery:null,qa:null,review:null,demoPayout:false,dispute:null},
-  {id:'SB-1002',serviceId:'catalog',businessId:'b1',studentId:null,title:'Подготовить 12 товарных карточек',brief:'Нужно подготовить 12 карточек для домашнего декора из предоставленной информации.',notes:'Без доступа к реальным системам магазина.',inputFile:null,status:'matching',demoPayment:true,revisionCount:0,deadline:date(72),createdAt:date(-7),updatedAt:date(-5),delivery:null,qa:null,review:null,demoPayout:false,dispute:null}
+  {id:'SB-1001',serviceId:'excel',businessId:'b2',performerId:'s2',title:'Обновить прайс-лист магазина',brief:'Выровнять 60 демонстрационных строк прайса; отметить пропуски и дубликаты.',notes:'Формат результата: CSV + изменения.',inputFile:null,status:'in_progress',demoPayment:true,revisionCount:0,deadline:date(48),createdAt:date(-15),updatedAt:date(-4),delivery:null,qa:null,review:null,demoPayout:false,dispute:null},
+  {id:'SB-1002',serviceId:'catalog',businessId:'b1',performerId:null,title:'Подготовить 12 товарных карточек',brief:'Нужно подготовить 12 карточек для домашнего декора из предоставленной информации.',notes:'Без доступа к реальным системам магазина.',inputFile:null,status:'matching',demoPayment:true,revisionCount:0,deadline:date(72),createdAt:date(-7),updatedAt:date(-5),delivery:null,qa:null,review:null,demoPayout:false,dispute:null}
  ],
  applications:[],
  skillTests:[{id:'test-s1',userId:'s1',serviceId:'catalog',score:4,total:4,passed:true,createdAt:date(-26)},{id:'test-s2',userId:'s2',serviceId:'excel',score:4,total:4,passed:true,createdAt:date(-25)},{id:'test-s3',userId:'s3',serviceId:'research',score:4,total:4,passed:true,createdAt:date(-24)}],
- messages:[{id:'msg-seed-1',orderId:'SB-1001',authorId:'b2',text:'Пожалуйста, сохраните исходные цены без округления.',createdAt:date(-9),readBy:['b2']},{id:'msg-seed-2',orderId:'SB-1001',authorId:'s2',text:'Принято, отмечу изменения отдельным списком.',createdAt:date(-8),readBy:['s2']},{id:'msg-seed-3',orderId:'SB-1002',authorId:'b1',text:'Здравствуйте! Подскажите, когда студент сможет начать подготовку карточек?',createdAt:date(-5.5),readBy:['b1']},{id:'msg-seed-4',orderId:'SB-1002',authorId:'a1',text:'Здравствуйте! Мы подбираем исполнителя с пройденным тестом по каталогам. Все обновления будут в этом чате.',createdAt:date(-5),readBy:['a1']}],
+ messages:[{id:'msg-seed-1',orderId:'SB-1001',authorId:'b2',text:'Пожалуйста, сохраните исходные цены без округления.',createdAt:date(-9),readBy:['b2']},{id:'msg-seed-2',orderId:'SB-1001',authorId:'s2',text:'Принято, отмечу изменения отдельным списком.',createdAt:date(-8),readBy:['s2']},{id:'msg-seed-3',orderId:'SB-1002',authorId:'b1',text:'Здравствуйте! Подскажите, когда исполнитель сможет начать подготовку карточек?',createdAt:date(-5.5),readBy:['b1']},{id:'msg-seed-4',orderId:'SB-1002',authorId:'a1',text:'Здравствуйте! Мы подбираем исполнителя с пройденным тестом по каталогам. Все обновления будут в этом чате.',createdAt:date(-5),readBy:['a1']}],
  reviews:[],
  notifications:[{id:'nt-1',userId:'a1',type:'order',text:'Новый демо-заказ SB-1002 ожидает назначения.',createdAt:date(-5),read:false}],
  ledger:[{id:'txn-1',orderId:'SB-1001',type:'demo_funded',amount:20000,createdAt:date(-13),demo:true},{id:'txn-2',orderId:'SB-1002',type:'demo_funded',amount:20000,createdAt:date(-6),demo:true}],

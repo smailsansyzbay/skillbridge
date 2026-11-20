@@ -40,6 +40,9 @@ assert.throws(()=>api.assign('b1',o.id,'s1'));
 assert.throws(()=>api.assign('a1',o.id,'s4')); // no category qualification
 assert.equal(api.qualification('s1','catalog'),true);
 api.apply('s1', o.id);
+api.updateProfile('s1',{name:'Алия М.',field:'Каталоги',available:false});
+assert.throws(()=>api.assign('a1',o.id,'s1'),/unavailable/i);
+api.updateProfile('s1',{name:'Алия М.',field:'Каталоги',available:true});
 api.assign('a1', o.id, 's1');
 assert.equal(o.status,'assigned');
 api.start('s1', o.id);
@@ -54,7 +57,7 @@ assert.throws(()=>api.release('b1',o.id));
 api.release('a1',o.id);
 assert.equal(o.status,'completed');
 assert.throws(()=>api.release('a1',o.id),'no double payout');
-assert.equal(storage.state().ledger.filter(x=>x.orderId===o.id&&x.type==='demo_student_payout').length,1);
+assert.equal(storage.state().ledger.filter(x=>x.orderId===o.id&&x.type==='demo_performer_payout').length,1);
 assert.equal(storage.state().ledger.filter(x=>x.orderId===o.id&&x.type==='demo_platform_commission').length,1);
 api.review('b1',o.id,5,'Отличный демонстрационный результат.',true);
 assert.equal(api.getPortfolio('s1').some(x=>x.order.id===o.id),true);
@@ -89,4 +92,38 @@ assert.equal(storage.state().orders.some(x=>x.id===o.id),false);
 storage.importData(json);
 assert.equal(storage.state().orders.some(x=>x.id===o.id),true);
 assert.equal(storage.state().messages.filter(x=>x.orderId===o.id).length,2);
-console.log('PASS: inbox unread/read status, local messages and JSON round-trip; 15%/85% payout, three services, roles, order lifecycle, QA, reviews, messaging, duplicate payment protection, JSON round-trip.');
+// Legacy snapshots preserve role permissions, linked records and payment totals.
+const legacy=JSON.parse(json);
+legacy.meta.schemaVersion=legacy.schemaVersion=1;
+for (const user of legacy.users) {
+  if (user.role==='performer') user.role='student';
+}
+for (const key of ['orders','applications','reviews']) {
+  for (const row of legacy[key]) {
+    row.studentId=row.performerId;
+    delete row.performerId;
+  }
+}
+for (const entry of legacy.ledger) {
+  if (entry.type==='demo_performer_payout') entry.type='demo_student_payout';
+}
+const legacyJson=JSON.stringify(legacy);
+function assertMigrated() {
+  assert.equal(storage.state().meta.schemaVersion,2);
+  assert.equal(api.user('s1').role,'performer');
+  assert.equal(api.order(o.id).performerId,'s1');
+  assert.equal(storage.state().applications.find(x=>x.orderId===o.id).performerId,'s1');
+  assert.equal(storage.state().reviews.find(x=>x.orderId===o.id).performerId,'s1');
+  assert.equal(storage.state().messages.filter(x=>x.orderId===o.id).length,2);
+  assert.equal(api.stats('s1').payouts,17000);
+}
+storage.importData(legacyJson);
+assertMigrated();
+localStorage.setItem('skillbridge_demo_v1',legacyJson);
+storage.load();
+assertMigrated();
+assert.equal(JSON.parse(localStorage.getItem('skillbridge_demo_v1')).meta.schemaVersion,2);
+localStorage.setItem('skillbridge_demo_previous_snapshot_v1',legacyJson);
+storage.restore();
+assertMigrated();
+console.log('PASS: roles, skills and availability, order lifecycle, QA, 15% commission, reviews, inbox persistence and v1 JSON migration.');

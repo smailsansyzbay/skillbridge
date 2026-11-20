@@ -1,6 +1,6 @@
 # SkillBridge — Frontend Demo Prototype
 
-An interactive **frontend-only** prototype for the university startup concept SkillBridge: a managed two-sided marketplace connecting Almaty SMEs and screened university students through fixed-scope Micro-Cases.
+SkillBridge is an interactive frontend demo of a managed marketplace for small, fixed-scope digital tasks. Businesses order defined deliverables, and an administrator matches available performers by task-specific skills and checks the result before customer acceptance. Performers can include students, homemakers, retirees and other specialists with relevant skills.
 
 **All users, transactions, reviews and displayed sample cases are fictional demonstration data. No real money is processed. This is not a secure production marketplace.**
 
@@ -16,17 +16,17 @@ An interactive **frontend-only** prototype for the university startup concept Sk
 
    Then open `http://localhost:8000/`.
 
-4. Click **Demo account** to switch between Employer, Student and Administrator profiles.
+4. Click **Demo account** to switch between Customer, Performer and Administrator profiles.
 
 ## Five-minute demo
 
-1. Switch to **Alma Market (SME)**, select **Product Catalog**, complete the brief and select **Pay (Demo)**. No card details are requested.
+1. Switch to **Alma Market (Customer)**, select **Product Catalog**, complete the brief and select **Pay (Demo)**. No card details are requested.
 2. Switch to **SkillBridge Manager (Admin)**, open the new matching order and assign **Алия М.** (already has the relevant catalog test qualification).
-3. Switch to **Алия М. (Student)**, open the assigned order, click **Start Work**, enter a synthetic result and **Submit Work**.
+3. Switch to **Алия М. (Performer)**, open the assigned order, click **Start Work**, enter a synthetic result and **Submit Work**.
 4. Switch to **Admin**, complete the four-point QA checklist and send the result for client review.
-5. Switch to **SME**, approve the submitted deliverable.
-6. Switch to **Admin**, release the **demonstration** student payout.
-7. Switch to **SME**, leave a review. Switch to **Student** to view the completion history, optional portfolio and earnings.
+5. Switch to **Customer**, approve the submitted deliverable.
+6. Switch to **Admin**, release the **demonstration** performer payout.
+7. Switch to **Customer**, leave a review. Switch to **Performer** to view the completion history, optional portfolio and earnings.
 8. Export the JSON state, refresh the page, or import it again to demonstrate persistence.
 
 Use the **Demo Controls** to switch users, reset sample data and export JSON. Do not enter real personal or customer information.
@@ -35,20 +35,20 @@ Use the **Demo Controls** to switch users, reset sample data and export JSON. Do
 
 | Service | Deliverable | Buyer price |
 | --- | --- | ---: |
-| Spreadsheet Cleanup | Up to 100 rows plus change log | 20,000 ₸ |
-| Product Catalog | Up to 20 structured product listings | 20,000 ₸ |
-| Competitor Snapshot | Comparison of five publicly documented competitors | 20,000 ₸ |
+| Spreadsheet Cleanup | Up to 100 rows plus change log | 20 000 ₸ |
+| Product Catalog | Up to 20 structured product listings | 20 000 ₸ |
+| Competitor Snapshot | Comparison of five publicly documented competitors | 20 000 ₸ |
 
-Nominal student share: **85% = 17,000 ₸**. Platform transaction commission: **15% = 3,000 ₸**. The commission is platform revenue **before** expenses, not net profit. Delivery target: three working days after an accepted complete brief, with one in-scope revision. No actual price, banking, tax or delivery commitments are offered by this prototype.
+Nominal performer share: **85% = 17 000 ₸**. Platform transaction commission: **15% = 3 000 ₸**. The commission is platform revenue **before** expenses, not net profit. Delivery target: three working days after an accepted complete brief, with one in-scope revision. No actual price, banking, tax or delivery commitments are offered by this prototype.
 
 ## Features
 
-- Landing page, service catalog and responsive dashboards for SME, student and administrator.
-- Local demo account selection and profile editing (not real authentication).
-- Task-specific skill tests and eligibility checks.
-- Structured order creation, order statuses, student applications and admin assignment.
+- Landing page, service catalog and responsive dashboards for customer, performer and administrator.
+- Local demo account selection and profile editing. A performer can register with a name and an optional bio.
+- Task-specific skill tests and matching by qualification and availability.
+- Structured order creation, order statuses, performer applications and admin assignment.
 - Demo payments, task delivery, QA, one revision, dispute/refund decisions, acceptance and non-duplicating demo payouts.
-- Order messages, notifications, student completion history and reviews.
+- Order messages, notifications, performer completion history and reviews.
 - Russian/Kazakh interface wording and tenge prices.
 - Local browser persistence, JSON download/import, optional file-save dialog where supported, reset and backup/restore.
 
@@ -58,17 +58,18 @@ The **Messages** section now contains a dedicated two-column inbox: a searchable
 
 - Send with **Enter**, insert a line break with **Shift+Enter**, or click **Send**. Messages may contain up to 1,500 characters.
 - Messages, sender, timestamp and recipient read state are saved automatically in the same browser JSON dataset as orders. The inbox also exports them via **Save JSON**. The preloaded example conversations are fictional.
-- Switch from SME to student or admin demo accounts to see the same order-linked messages from another participant's perspective. Unread markers update when the thread is opened.
+- Switch from customer to performer or admin demo accounts to see the same order-linked messages from another participant's perspective. Unread markers update when the thread is opened.
 - Search by order, participant or message text; filter for unread threads.
 - No real-time network messaging, device synchronization, genuine account authentication or end-to-end encryption is provided. This remains a **single-browser demonstration**.
 
 ## Data storage and security limitations
 
 - `js/seed.js` provides the **fictional initial data**. `data/example-demo.json` is a schema example; it is not a real user database.
+- New snapshots use schema version 2. Version 1 snapshots are upgraded on load, import and restore, preserving account IDs, assignments and demo payment history.
 - The application saves state to **`localStorage`** in the current browser. Data does not synchronize across devices.
 - **Export JSON** downloads a snapshot. **Import JSON** loads a saved snapshot. **Save JSON** may use the browser's File System Access API if available; otherwise it downloads a JSON file. Browser permission is required for direct file writing.
 - Role and status checks are **frontend-only demonstrations**, not server-enforced security. Data is accessible to someone who controls the browser.
-- There is no banking integration, legally protected escrow, encrypted server storage, production authorization, legal compliance certification, real task screening or verified completed sales.
+- Financial actions are simulated locally. The demo has no banking integration, identity or legal-status verification.
 - Attachments are for demonstration. Small text attachments may be stored as part of the JSON state; some other files store only metadata. Do not upload personal or confidential records.
 - All examples should use synthetic data. Do not use this code for real customer orders or payments.
 
@@ -77,7 +78,7 @@ The **Messages** section now contains a dedicated two-column inbox: a searchable
 ```text
 index.html                 HTML entry point
 css/styles.css             Responsive UI and animation
-js/seed.js                 Fictional users, Micro-Cases, skills tests
+js/seed.js                 Fictional users, microtasks, skills tests
 js/storage.js              State, localStorage, JSON import/export
 js/data.js                 Order lifecycle and domain checks
 js/ui.js                   Page templates, dashboards, navigation
