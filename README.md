@@ -32,6 +32,10 @@ The editorial home page presents role entry, task categories, the workflow and s
 
 The rewards page shows earned funds, available balance, pending operator credits and a combined credit/withdrawal history. Withdraw to Account records a simulated Freedom withdrawal after a separate confirmation. Only four fictional account digits are requested and stored. Amounts are limited to the available credited balance, duplicate requests are idempotent, and withdrawal records persist in JSON. No bank is contacted or real money transferred.
 
+## Navigation
+
+Back and Forward buttons in the workspace follow in-app page history, including individual order pages. Browser navigation buttons use the same history. Opening a modal does not create a page entry, and navigating after going back starts a new forward branch. These controls change the page being viewed and do not undo saved actions.
+
 ## Features
 
 - Landing page, service catalog and responsive dashboards for customer, performer and administrator.

@@ -109,7 +109,36 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
 }
 function scrollInbox(){const feed=$('#inbox-chat-feed');if(feed)feed.scrollTop=feed.scrollHeight;}
 function show(){const root=$('#app');if(!root)return;document.documentElement.lang=({ru:'ru',kz:'kk',en:'en'})[d().settings.language];document.title=term('SkillBridge — Микро-задания для бизнеса и исполнителей','SkillBridge — Бизнес пен орындаушыларға арналған шағын тапсырмалар');let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():'');document.body.classList.toggle('modal-active',!!state.modal);document.body.classList.toggle('workspace-active',state.route!=='landing'&&!!state.uid);if(state.route==='messages')requestAnimationFrame(scrollInbox);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
-function render(keepScroll=false){let scroll=window.scrollY;show();if(!keepScroll)window.scrollTo(0,0);else window.scrollTo(0,scroll);}
+const navigation={session:Date.now().toString(36)+Math.random().toString(36).slice(2),entries:[],index:-1,restoring:false};
+function navigationSnapshot(){
+ return {uid:state.uid,route:state.route,orderId:state.route==='order-detail'?state.orderId:null};
+}
+function rememberNavigation(){
+ if(navigation.restoring)return;
+ const next=navigationSnapshot(),current=navigation.entries[navigation.index];
+ if(current&&JSON.stringify(current)===JSON.stringify(next))return;
+ navigation.entries=navigation.entries.slice(0,navigation.index+1);
+ navigation.entries.push(next);navigation.index++;
+ const entry={skillbridge:navigation.session,index:navigation.index};
+ if(navigation.index===0)history.replaceState(entry,'');else history.pushState(entry,'');
+}
+function restoreNavigation(event){
+ const saved=event.state;
+ if(saved?.skillbridge!==navigation.session||!navigation.entries[saved.index]){
+  navigation.entries=[];navigation.index=-1;state.uid=null;state.route='landing';state.orderId=null;state.modal=null;render();return;
+ }
+ navigation.index=saved.index;
+ const entry=navigation.entries[navigation.index];
+ state.uid=window.SBData.user(entry.uid)?entry.uid:null;
+ state.modal=null;state.mobile=false;state.inbox.mobileChat=false;
+ navigation.restoring=true;
+ try{
+  let route=state.uid?entry.route:'landing';
+  if(route==='order-detail'&&!d().orders.some(order=>order.id===entry.orderId))route='dashboard';
+  navigate(route,entry.orderId);
+ }finally{navigation.restoring=false;}
+}
+function render(keepScroll=false){let scroll=window.scrollY;rememberNavigation();show();if(!keepScroll)window.scrollTo(0,0);else window.scrollTo(0,scroll);}
 function navigate(route,oid=null){state.modal=null;if(route==='landing'){state.route='landing';state.orderId=null;state.mobile=false;render();return;}
  if(!getUser()){state.modal={type:'account'};state.route='landing';render();return;}
  const role=getUser().role;
@@ -200,6 +229,8 @@ async function submitForm(form){const fd=new FormData(form), type=form.dataset.f
 async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid=el.dataset.sid,target=el.dataset.target;
  try{
  switch(action){
+ case 'history-back':if(navigation.index>0)history.back();break;
+ case 'history-forward':if(navigation.index<navigation.entries.length-1)history.forward();break;
  case 'navigate':navigate(el.dataset.route||'dashboard');break;
  case 'open-order':navigate('order-detail',oid);break;
  case 'inbox-thread':state.inbox.threadId=oid;state.inbox.filter='all';state.inbox.mobileChat=true;window.SBData.markThreadRead(state.uid,oid);render(true);scrollInbox();if(window.matchMedia('(max-width:760px)').matches)requestAnimationFrame(()=>$('.inbox-layout')?.scrollIntoView({behavior:'smooth',block:'start'}));break;
@@ -249,9 +280,9 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
  }
  }catch(e){toast(e.message||String(e),true);}
 }
-const SBApp={uid:()=>state.uid,route:()=>state.route,orderId:()=>state.orderId,mobileOpen:()=>state.mobile,filters:()=>state.filters,inboxState:()=>state.inbox,render,navigate,choose,open,reset:()=>window.SBStorage.reset()};
+const SBApp={canGoBack:()=>navigation.index>0,canGoForward:()=>navigation.index<navigation.entries.length-1,uid:()=>state.uid,route:()=>state.route,orderId:()=>state.orderId,mobileOpen:()=>state.mobile,filters:()=>state.filters,inboxState:()=>state.inbox,render,navigate,choose,open,reset:()=>window.SBStorage.reset()};
 window.SBApp=SBApp;
-function initialize(){window.SBStorage.load();state.route='landing';render();
+function initialize(){window.addEventListener('popstate',restoreNavigation);window.SBStorage.load();state.route='landing';render();
  document.addEventListener('click',e=>{const act=e.target.closest('[data-action]');if(act){e.preventDefault();clicked(act);return;}if(e.target.matches('[data-modal-backdrop]'))close();});
  document.addEventListener('submit',e=>{const form=e.target.closest('form[data-form]');if(!form)return;e.preventDefault();if(form.reportValidity())submitForm(form);});
  const importer=$('#json-import');importer?.addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>3_000_000)throw Error('JSON слишком большой (максимум 3 MB).');window.SBStorage.importData(await f.text());state.modal=null;state.filters={query:'',status:'',category:''};if(!window.SBData.user(state.uid))state.uid=null;render();toast(term('JSON успешно импортирован.','JSON сәтті импортталды.'));}catch(err){toast(err.message,true);}finally{importer.value='';}});

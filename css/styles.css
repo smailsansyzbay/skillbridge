@@ -300,3 +300,14 @@ body.workspace-active .modal h2{font-weight:500;font-size:28px}
 .withdraw-available{display:flex;justify-content:space-between;padding:20px;background:#edf4e4;border-radius:14px;margin:20px 0;color:#59784a}
 @media(max-width:1000px){.earnings-overview{grid-template-columns:1fr}.earnings-balance{padding:26px}.earnings-amount{font-size:44px}}
 @media(max-width:480px){.earnings-summary{gap:10px}.app-shell .earnings-summary .stat{padding:16px}.app-shell .earnings-summary .stat .value{font-size:24px}.earnings-transaction{gap:10px;align-items:flex-start;flex-wrap:wrap}.earnings-transaction-copy{flex-basis:calc(100% - 60px)}.earnings-transaction-total{margin-left:54px;text-align:left}.earnings-balance{padding:24px}.earnings-amount{font-size:39px}}
+.history-controls{display:inline-flex;gap:4px;align-items:center}
+.history-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #d9e5d3;background:transparent;border-radius:9px;padding:8px 10px;color:#4b7054;font-size:12px;line-height:1.2}
+.history-button .ic{width:16px;height:16px}
+.history-back .ic{transform:rotate(180deg)}
+.history-button:hover:not(:disabled){background:#e6f1dc;border-color:#bcd5aa}
+.history-button:disabled{opacity:.3;cursor:default}
+.history-button:focus-visible{outline:2px solid #7fac5c;outline-offset:3px}
+.header-left .history-controls{margin-right:12px}
+.topnav .history-button{border-color:#d4d9cc;color:#536d52}
+@media(max-width:1000px){.history-button span{display:none}.history-button{padding:8px}.header-left .history-controls{margin-right:4px}}
+@media(max-width:480px){.app-header .header-left{gap:7px}.app-header .header-left h3{display:none}.history-controls{gap:3px}.topnav .history-controls{display:none}}
