@@ -8,7 +8,7 @@ const ui=()=>window.SBUI;
 const str=(s)=>String(s??'');
 const esc=(s)=>str(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const isKz=()=>d().settings.language==='kz';
-const term=(ru,kz)=>isKz()?(kz||ru):ru;
+const term=(ru,kz,en)=>window.SBI18n.text(ru,kz,en);
 const money=n=>ui().money(n);
 const getUser=()=>window.SBData.user(state.uid);
 const getOrder=oid=>window.SBData.order(oid);
@@ -79,7 +79,7 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  case 'qa':{
   const o=getOrder(m.oid),srv=service(o.serviceId);title=term('Проверка качества QA','Сапаны тексеру QA');wide=true;
   body=`<div class="info"><strong>${esc(o.id)}</strong> · ${esc(o.title)}</div><div class="surface" style="margin-top:15px"><h3>${term('Результат исполнителя','Орындаушының нәтижесі')}</h3><p style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(o.delivery?.text||'')}</p></div>
- <form data-form="qa"><input type="hidden" name="oid" value="${esc(o.id)}"><p><strong>${term('Проверка требований','Талаптарды тексеру')}</strong></p>${(srv.criteria[isKz()?'kz':'ru']||srv.criteria.ru).map((v,i)=>`<label class="check-row"><input type="checkbox" name="check${i}" value="yes"> ${esc(v)}</label>`).join('')}
+ <form data-form="qa"><input type="hidden" name="oid" value="${esc(o.id)}"><p><strong>${term('Проверка требований','Талаптарды тексеру')}</strong></p>${(ui().loc(srv.criteria)).map((v,i)=>`<label class="check-row"><input type="checkbox" name="check${i}" value="yes"> ${esc(v)}</label>`).join('')}
  <div class="field" style="margin-top:15px"><label>${term('Решение','Шешім')}</label><select name="verdict"><option value="pass">${term('Одобрить и отправить клиенту','Қабылдап клиентке жіберу')}</option><option value="reject">${term('Вернуть на исправление','Түзетуге қайтару')}</option></select></div><div class="field" style="margin-top:14px"><label>${term('Комментарий QA','QA пікірі')}</label><textarea name="notes" rows="3" maxlength="1200" placeholder="${term('Причина отказа: не менее 12 символов','Бас тарту себебі: 12 таңба')}"></textarea></div>${actions(term('Сохранить решение QA','QA шешімін сақтау'))}</form>`;break;
  }
  case 'revision':{
@@ -99,7 +99,7 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  return modal(title,body,wide);
 }
 function scrollInbox(){const feed=$('#inbox-chat-feed');if(feed)feed.scrollTop=feed.scrollHeight;}
-function show(){const root=$('#app');if(!root)return;document.documentElement.lang=isKz()?'kk':'ru';document.title=term('SkillBridge — Микро-задания для бизнеса и исполнителей','SkillBridge — Бизнес пен орындаушыларға арналған шағын тапсырмалар');let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():'');document.body.classList.toggle('modal-active',!!state.modal);if(state.route==='messages')requestAnimationFrame(scrollInbox);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
+function show(){const root=$('#app');if(!root)return;document.documentElement.lang=({ru:'ru',kz:'kk',en:'en'})[d().settings.language];document.title=term('SkillBridge — Микро-задания для бизнеса и исполнителей','SkillBridge — Бизнес пен орындаушыларға арналған шағын тапсырмалар');let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():'');document.body.classList.toggle('modal-active',!!state.modal);if(state.route==='messages')requestAnimationFrame(scrollInbox);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
 function render(keepScroll=false){let scroll=window.scrollY;show();if(!keepScroll)window.scrollTo(0,0);else window.scrollTo(0,scroll);}
 function navigate(route,oid=null){state.modal=null;if(route==='landing'){state.route='landing';state.orderId=null;state.mobile=false;render();return;}
  if(!getUser()){state.modal={type:'account'};state.route='landing';render();return;}
@@ -107,7 +107,7 @@ function navigate(route,oid=null){state.modal=null;if(route==='landing'){state.r
  const allowed={business:['dashboard','catalog','orders','messages','notifications','profile','order-detail','faq','about'],performer:['dashboard','opportunities','mytasks','screening','portfolio','earnings','messages','notifications','profile','order-detail','faq','about'],admin:['dashboard','admin-orders','admin-performers','qa','disputes','finance','messages','notifications','profile','order-detail','faq','about','data']};
  if(!allowed[role].includes(route)){toast(term('Этот раздел не доступен выбранной роли.','Бұл бөлім осы рөлге қолжетімсіз.'),true);return;}
  state.route=route;state.orderId=oid||state.orderId;state.mobile=false;state.filters={query:'',status:'',category:''};if(route==='messages'){const available=d().orders.filter(o=>window.SBData.visible(o,state.uid)).sort((a,b)=>new Date(b.updatedAt||b.createdAt)-new Date(a.updatedAt||a.createdAt));if(!available.some(o=>o.id===state.inbox.threadId))state.inbox.threadId=available[0]?.id||null;if(state.inbox.threadId)window.SBData.markThreadRead(state.uid,state.inbox.threadId);}render();}
-function choose(uid){const u=window.SBData.user(uid);if(!u){toast('Account not found.',true);return;}state.uid=uid;state.modal=null;state.route='dashboard';state.orderId=null;state.filters={query:'',status:'',category:''};state.inbox={threadId:null,query:'',filter:'all',mobileChat:false,drafts:{}};state.mobile=false;try{sessionStorage.setItem('sb-current-user',uid);}catch(e){}render();toast(term(`Вы вошли как ${u.name} (DEMO)`,`Сіз ${u.name} ретінде кірдіңіз (DEMO)`));}
+function choose(uid){const u=window.SBData.user(uid);if(!u){toast('Account not found.',true);return;}state.uid=uid;state.modal=null;state.route='dashboard';state.orderId=null;state.filters={query:'',status:'',category:''};state.inbox={threadId:null,query:'',filter:'all',mobileChat:false,drafts:{}};state.mobile=false;try{sessionStorage.setItem('sb-current-user',uid);}catch(e){}render();toast(term(`Вы вошли как ${u.name} (DEMO)`,`Сіз ${u.name} ретінде кірдіңіз (DEMO)`,`Selected ${u.name} (demo)`));}
 function open(type,meta={}){state.modal={type,...meta};render(true);}
 function close(){state.modal=null;render(true);}
 function tryAction(fn,success){try{let x=fn();if(success)toast(success);render(true);return x;}catch(e){toast(e.message||term('Операция не выполнена.','Әрекет орындалмады.'),true);}}
@@ -116,7 +116,7 @@ const confirmAction=(question,fn)=>{if(window.confirm(question))return tryAction
 function certificate(oid){
  const o=getOrder(oid);
  if(o.status!=='completed'||o.performerId!==state.uid)throw Error(term('Сертификат доступен после завершения своего задания.','Сертификат өз тапсырмаңыз аяқталғаннан кейін қолжетімді.'));
- const person=getUser(),title=ui().loc(service(o.serviceId)?.title)||'',date=new Intl.DateTimeFormat(isKz()?'kk-KZ':'ru-RU').format(new Date(o.updatedAt));
+ const person=getUser(),title=ui().loc(service(o.serviceId)?.title)||'',date=new Intl.DateTimeFormat(window.SBI18n.locale()).format(new Date(o.updatedAt));
  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="850" viewBox="0 0 1200 850">
  <defs><linearGradient id="paper" x2="1" y2="1"><stop stop-color="#fffdf7"/><stop offset="1" stop-color="#eef3e6"/></linearGradient></defs>
  <rect width="1200" height="850" fill="url(#paper)"/><path d="M0 0h1200v32H0z" fill="#183d35"/>
@@ -189,7 +189,7 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
  case 'inbox-filter':state.inbox.filter=el.dataset.filter==='unread'?'unread':'all';state.inbox.mobileChat=false;render(true);break;
  case 'scroll-to':{if(state.route!=='landing'){navigate('landing');}requestAnimationFrame(()=>{const t=document.getElementById(target);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});});break;}
  case 'menu':state.mobile=!state.mobile;render(true);break;
- case 'language':window.SBData.changeLanguage(isKz()?'ru':'kz');render(true);toast(term('Язык переключен.','Тіл ауыстырылды.'));break;
+ case 'language':window.SBData.changeLanguage(({ru:'kz',kz:'en',en:'ru'})[d().settings.language]);render(true);toast(term('Язык переключен.','Тіл ауыстырылды.'));break;
  case 'account-picker':open('account');break;
  case 'admin-entry':{
   const admin=d().users.find(user=>user.role==='admin');

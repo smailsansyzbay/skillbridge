@@ -146,3 +146,15 @@ assert.equal(storage.state().ledger.find(x=>x.orderId===custom.id&&x.type==='dem
 storage.importData(JSON.stringify(storage.state()));
 assert.equal(api.priceFor(api.order(custom.id)),35000);
 console.log('PASS: custom order price, duration, validation, workflow, commission and JSON persistence.');
+
+// English state must survive export/import and local reload.
+api.changeLanguage('en');
+storage.importData(JSON.stringify(storage.state()));
+assert.equal(storage.state().settings.language,'en');
+storage.load();
+assert.equal(storage.state().settings.language,'en');
+vm.runInContext(fs.readFileSync(path.join(__dirname,'../js/i18n.js'),'utf8'),context);
+assert.equal(context.SBI18n.text('Заказчики','Тапсырыс берушілер'),'Customers');
+assert.equal(context.SBI18n.english(['Обязательные поля и цены'])[0],'Required fields and prices');
+assert.throws(()=>api.changeLanguage('unknown'));
+console.log('PASS: English state persistence and translated criteria.');

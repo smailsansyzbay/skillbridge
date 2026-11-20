@@ -24,6 +24,10 @@ Nominal performer share: **85% = 17 000 ₸**. Platform transaction commission: 
 
 Custom Order is the fourth catalog option. Customers select a competency category and provide a title, brief, price (1–10,000,000 ₸) and duration (1–365 working days). Matching and QA use the selected category. The platform commission remains 15%. Existing standard services retain their demo prices and delivery targets.
 
+## Home page and languages
+
+The editorial home page presents role entry, task categories, the workflow and six expanded questions and answers. Pricing and financial demo details appear inside the order flow. The language button cycles Russian → Kazakh → English. Interface text, service descriptions, criteria and test questions use the selected language. Names, user-entered tasks and messages retain their original wording.
+
 ## Features
 
 - Landing page, service catalog and responsive dashboards for customer, performer and administrator.
@@ -32,7 +36,7 @@ Custom Order is the fourth catalog option. Customers select a competency categor
 - Structured order creation, order statuses, performer applications and admin assignment.
 - Demo payments, task delivery, QA, one revision, dispute/refund decisions, acceptance and non-duplicating demo payouts.
 - Order messages, notifications, performer completion history and reviews.
-- Russian/Kazakh interface wording and tenge prices.
+- Russian/Kazakh/English interface wording and tenge prices.
 - Local browser persistence, JSON download/import, optional file-save dialog where supported, reset and backup/restore.
 
 ## Interactive messages (new)

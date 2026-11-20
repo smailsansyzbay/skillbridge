@@ -3,7 +3,7 @@
 const KEY='skillbridge_demo_v1', SNAP='skillbridge_demo_previous_snapshot_v1';
 let current=null, fileHandle=null;
 const clone=(v)=>JSON.parse(JSON.stringify(v));
-function isData(d){return !!(d&&typeof d==='object'&&d.meta?.appName==='SkillBridge'&&[1,2].includes(Number(d.meta.schemaVersion))&&d.settings&&Number(d.settings.commissionRate)>=0&&Number(d.settings.commissionRate)<1&&['ru','kz'].includes(d.settings.language)&&['users','services','orders','applications','skillTests','messages','reviews','notifications','ledger','activityLog','profileConsent'].every(k=>Array.isArray(d[k]))&&d.users.every(x=>typeof x.id==='string'&&(['business','performer','admin'].includes(x.role)||(Number(d.meta.schemaVersion)===1&&x.role==='student')))&&d.orders.every(x=>typeof x.id==='string'&&typeof x.status==='string'));}
+function isData(d){return !!(d&&typeof d==='object'&&d.meta?.appName==='SkillBridge'&&[1,2].includes(Number(d.meta.schemaVersion))&&d.settings&&Number(d.settings.commissionRate)>=0&&Number(d.settings.commissionRate)<1&&['ru','kz','en'].includes(d.settings.language)&&['users','services','orders','applications','skillTests','messages','reviews','notifications','ledger','activityLog','profileConsent'].every(k=>Array.isArray(d[k]))&&d.users.every(x=>typeof x.id==='string'&&(['business','performer','admin'].includes(x.role)||(Number(d.meta.schemaVersion)===1&&x.role==='student')))&&d.orders.every(x=>typeof x.id==='string'&&typeof x.status==='string'));}
 function migrate(data){
  if(Number(data.meta.schemaVersion)!==1)return data;
  for(const user of data.users){
