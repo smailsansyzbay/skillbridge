@@ -132,3 +132,5 @@
 .footer-admin{border:0;background:transparent;color:inherit;font-size:11px;opacity:.65;padding:8px 0;text-decoration:underline;text-underline-offset:3px}.footer-admin:hover,.footer-admin:focus-visible{opacity:1}
 
 .demo-account-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.demo-account-group{padding:20px;background:var(--bg);border:1px solid var(--line);border-radius:18px;min-width:0}.demo-account-group:only-child{grid-column:1/-1}.demo-account-group h3{margin:0 0 16px}.demo-account-group .select-account{background:white}.demo-account-group .name{min-width:0;overflow-wrap:anywhere}@media(max-width:600px){.demo-account-groups{grid-template-columns:1fr;gap:14px}.demo-account-group{padding:14px}}
+
+.demo-add-user{width:100%;margin-top:14px;border-style:dashed;justify-content:center}

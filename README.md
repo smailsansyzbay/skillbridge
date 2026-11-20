@@ -6,7 +6,7 @@ SkillBridge is an interactive frontend demo of a managed marketplace for small, 
 
 ## Demo entry
 
-The home page offers Performer and Customer entry. Each opens demo profiles for that role. Start Demonstration opens separate Customer and Performer groups. Select a profile to enter immediately, without registration, passwords or email verification.
+The home page offers Performer and Customer entry. Each opens demo profiles for that role. Start Demonstration opens separate Customer and Performer groups. Select a profile to enter immediately, without registration, passwords or email verification. Each group has an Add Performer or Add Customer button. Creating a demo profile opens it immediately and saves it in browser storage and JSON exports. New performers start without skill qualifications.
 
 A subtle Administrator link at the bottom of the home page opens the local administrative demo workspace. All demo accounts are publicly accessible and intended for fictional data.
 

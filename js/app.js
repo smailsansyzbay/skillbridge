@@ -27,7 +27,16 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  case 'account':{
   title=term('Начать демонстрацию','Демонстрацияны бастау');wide=true;
   const roles=m.role?[m.role]:['business','performer'];
-  body=`<p class="muted">${term('Выберите демо-профиль, чтобы посмотреть, как работает платформа.','Платформаның жұмысын көру үшін демо-профильді таңдаңыз.')}</p><div class="demo-account-groups">${roles.filter(role=>['business','performer'].includes(role)).map(role=>`<section class="demo-account-group"><h3>${role==='business'?term('Заказчики','Тапсырыс берушілер'):term('Исполнители','Орындаушылар')}</h3>${d().users.filter(user=>user.role===role).map(user=>`<button type="button" class="select-account" data-action="switch-account" data-uid="${esc(user.id)}"><span class="avatar">${esc(user.name.slice(0,2))}</span><span class="name"><strong>${esc(user.name)}</strong><small>${esc(user.company||ui().loc(user.field)||ui().t(role==='business'?'roleBusiness':'rolePerformer'))}</small></span><span>→</span></button>`).join('')||`<p class="muted">${term('Демо-профилей пока нет.','Демо-профильдер әзірге жоқ.')}</p>`}</section>`).join('')}</div>`;break;
+  body=`<p class="muted">${term('Выберите демо-профиль, чтобы посмотреть, как работает платформа.','Платформаның жұмысын көру үшін демо-профильді таңдаңыз.')}</p><div class="demo-account-groups">${roles.filter(role=>['business','performer'].includes(role)).map(role=>`<section class="demo-account-group"><h3>${role==='business'?term('Заказчики','Тапсырыс берушілер'):term('Исполнители','Орындаушылар')}</h3>${d().users.filter(user=>user.role===role).map(user=>`<button type="button" class="select-account" data-action="switch-account" data-uid="${esc(user.id)}"><span class="avatar">${esc(user.name.slice(0,2))}</span><span class="name"><strong>${esc(user.name)}</strong><small>${esc(user.company||ui().loc(user.field)||ui().t(role==='business'?'roleBusiness':'rolePerformer'))}</small></span><span>→</span></button>`).join('')||`<p class="muted">${term('Демо-профилей пока нет.','Демо-профильдер әзірге жоқ.')}</p>`}<button type="button" class="btn btn-line demo-add-user" data-action="add-demo-user" data-role="${role}">＋ ${role==='business'?term('Добавить заказчика','Тапсырыс берушіні қосу'):term('Добавить исполнителя','Орындаушыны қосу')}</button></section>`).join('')}</div>`;break;
+ }
+ case 'new-demo-user':{
+  const role=m.role==='business'?'business':'performer';
+  title=role==='business'?term('Новый заказчик','Жаңа тапсырыс беруші'):term('Новый исполнитель','Жаңа орындаушы');
+  body=`<p class="hint">${term('Демо-профиль сохранится в этом браузере и в экспортируемом JSON.','Демо-профиль осы браузерде және экспортталған JSON файлында сақталады.')}</p><form data-form="new-demo-user" class="form-grid"><input type="hidden" name="role" value="${role}">
+  ${formField('name',term('Имя','Аты'),'','text','required minlength="2" maxlength="70"')}
+  ${role==='business'?formField('company',term('Название компании','Компания атауы'),'','text','required minlength="2" maxlength="120"'):formField('field',term('Направление работы (необязательно)','Жұмыс бағыты (міндетті емес)'),'','text','maxlength="100"')}
+  ${textarea('bio',term('О себе (необязательно)','Өзіңіз туралы (міндетті емес)'),'','maxlength="1000"')}
+  ${actions(term('Создать и открыть профиль','Профильді жасап ашу'))}</form>`;break;
  }
  case 'order':{
   const srv=service(m.sid);if(!srv){return '';}title=term('Новое микро-задание','Жаңа шағын тапсырма');wide=true;
@@ -104,6 +113,15 @@ async function prepareFile(file){if(!file)return null;if(file.size>5_000_000)thr
 async function submitForm(form){const fd=new FormData(form), type=form.dataset.form;const val=k=>str(fd.get(k)||'').trim();const uid=state.uid;
  try{
  switch(type){
+ case 'new-demo-user':{
+  const role=val('role'),name=val('name'),company=val('company');
+  if(!['business','performer'].includes(role)||name.length<2||name.length>70)throw Error(term('Введите имя длиной 2–70 символов.','Есім 2–70 таңбадан тұруы керек.'));
+  if(role==='business'&&(company.length<2||company.length>120))throw Error(term('Введите название компании (2–120 символов).','Компания атауын енгізіңіз (2–120 таңба).'));
+  const user={id:window.SBData.id('user'),role,name,company:role==='business'?company:'',field:val('field').slice(0,100),bio:val('bio').slice(0,1000),skills:[],available:true,demo:true};
+  d().users.push(user);
+  if(!window.SBStorage.save()){d().users.pop();throw Error(term('Не удалось сохранить профиль в браузере.','Профиль браузерде сақталмады.'));}
+  choose(user.id);return;
+ }
  case 'create-order':{
   const file=await prepareFile(fd.get('source') instanceof File&&fd.get('source').size?fd.get('source'):null);
   const o=window.SBData.createOrder(uid,{serviceId:val('sid'),title:val('title'),brief:val('brief'),notes:val('notes'),inputFile:file});state.modal=null;state.orderId=o.id;state.route='order-detail';render();success(term('Заказ создан. Следующий шаг — DEMO оплата.','Тапсырыс жасалды. Келесі қадам — DEMO төлем.'));return;
@@ -146,6 +164,7 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
   if(!admin){toast(term('В данных нет администратора.','Деректерде әкімші жоқ.'),true);break;}
   choose(admin.id);break;
  }
+ case 'add-demo-user':open('new-demo-user',{role:el.dataset.role});break;
  case 'begin-demo':open('account',{role:el.dataset.role});break;
  case 'logout':state.uid=null;sessionStorage.removeItem('sb-current-user');navigate('landing');break;
  case 'switch-account':choose(el.dataset.uid);break;
