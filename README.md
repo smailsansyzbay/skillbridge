@@ -4,32 +4,15 @@ SkillBridge is an interactive frontend demo of a managed marketplace for small, 
 
 **All users, transactions, reviews and displayed sample cases are fictional demonstration data. No real money is processed. This is not a secure production marketplace.**
 
-## Quick start
+## Account entry
 
-1. Download or clone this repository.
-2. Open `index.html` in a modern browser (Chrome, Edge or Firefox). No build tools, database, server or network access are required for basic use.
-3. If your browser limits some functionality when opened with `file://`, launch a **static** local server (not a backend):
+The public home page offers Performer and Customer entry. Each opens registration or email/password sign-in for the selected role. Accounts persist in the current browser and JSON exports. Passwords use salted PBKDF2-SHA256 with 210,000 iterations. Use demo credentials only.
 
-   ```bash
-   python3 -m http.server 8000
-   ```
+Sign out from the workspace before entering another account. Reloading requires signing in again. Seed profiles have no login credentials. Existing browser profiles without credentials remain in the dataset but cannot be selected as public login accounts.
 
-   Then open `http://localhost:8000/`.
+Public administrator entry and account switching are disabled. Administrative workflow logic remains available for development and automated tests. Enabling a real operator portal requires backend authentication, server-side authorization and storage. A concealed URL or browser password cannot protect browser-owned JSON from its owner. This static demo does not provide production authentication or protected administrative data.
 
-4. Click **Demo account** to switch between Customer, Performer and Administrator profiles.
-
-## Five-minute demo
-
-1. Switch to **Alma Market (Customer)**, select **Product Catalog**, complete the brief and select **Pay (Demo)**. No card details are requested.
-2. Switch to **SkillBridge Manager (Admin)**, open the new matching order and assign **Алия М.** (already has the relevant catalog test qualification).
-3. Switch to **Алия М. (Performer)**, open the assigned order, click **Start Work**, enter a synthetic result and **Submit Work**.
-4. Switch to **Admin**, complete the four-point QA checklist and send the result for client review.
-5. Switch to **Customer**, approve the submitted deliverable.
-6. Switch to **Admin**, release the **demonstration** performer payout.
-7. Switch to **Customer**, leave a review. Switch to **Performer** to view the completion history, optional portfolio and earnings.
-8. Export the JSON state, refresh the page, or import it again to demonstrate persistence.
-
-Use the **Demo Controls** to switch users, reset sample data and export JSON. Do not enter real personal or customer information.
+Open index.html in a modern browser, or serve the folder using a local static server. Web Crypto requires a secure context such as HTTPS or localhost.
 
 ## Three standard services
 
@@ -44,7 +27,7 @@ Nominal performer share: **85% = 17 000 ₸**. Platform transaction commission: 
 ## Features
 
 - Landing page, service catalog and responsive dashboards for customer, performer and administrator.
-- Local demo account selection and profile editing. A performer can register with a name and an optional bio.
+- Role-specific registration and local email/password sign-in, profile editing and sign-out.
 - Task-specific skill tests and matching by qualification and availability.
 - Structured order creation, order statuses, performer applications and admin assignment.
 - Demo payments, task delivery, QA, one revision, dispute/refund decisions, acceptance and non-duplicating demo payouts.
@@ -58,7 +41,7 @@ The **Messages** section now contains a dedicated two-column inbox: a searchable
 
 - Send with **Enter**, insert a line break with **Shift+Enter**, or click **Send**. Messages may contain up to 1,500 characters.
 - Messages, sender, timestamp and recipient read state are saved automatically in the same browser JSON dataset as orders. The inbox also exports them via **Save JSON**. The preloaded example conversations are fictional.
-- Switch from customer to performer or admin demo accounts to see the same order-linked messages from another participant's perspective. Unread markers update when the thread is opened.
+- Sign into a participating account to view its order-linked conversations. Unread markers update when the thread is opened.
 - Search by order, participant or message text; filter for unread threads.
 - No real-time network messaging, device synchronization, genuine account authentication or end-to-end encryption is provided. This remains a **single-browser demonstration**.
 
@@ -102,7 +85,7 @@ node --check js/app.js
 node tests/smoke.test.cjs
 ```
 
-The smoke test checks price/commission, permissions, payment and assignment, qualification, task lifecycle, QA, review, duplicate payouts and JSON import/export. UI/browser testing is separate: manually run the five-minute demonstration after deployment. **Passing smoke tests does not certify every visual control or production security.**
+The smoke test checks price/commission, permissions, payment and assignment, qualification, task lifecycle, QA, review, duplicate payouts and JSON import/export. Browser testing covers registration, login, logout and blocked public administrator selection. **Passing smoke tests does not certify every visual control or production security.**
 
 ## Publish with GitHub Pages (optional)
 

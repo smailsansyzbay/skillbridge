@@ -2,6 +2,7 @@
 (function(){
 'use strict';
 const $=s=>document.querySelector(s);
+let authenticatedUid=null;
 const state={uid:null,route:'landing',orderId:null,mobile:false,filters:{query:'',status:'',category:''},modal:null,inbox:{threadId:null,query:'',filter:'all',mobileChat:false,drafts:{}}};
 const d=()=>window.SBStorage.state();
 const ui=()=>window.SBUI;
@@ -25,18 +26,18 @@ function modal(title,body,wide=false){return `<div class="modal-overlay" data-mo
 function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,u=getUser();let title='',body='',wide=false;
  switch(m.type){
  case 'account':{
-  title=term('Выберите демонстрационный аккаунт','Демо аккаунтты таңдаңыз');
-  const roleName={business:ui().t('roleBusiness'),performer:ui().t('rolePerformer'),admin:ui().t('roleAdmin')};
-  body=warn('<strong>DEMO ONLY:</strong> '+term('это не защищенная авторизация; данные видны в данном браузере.','бұл қорғалған авторизация емес; деректер осы браузерде сақталады.'))+
-  d().users.map(a=>`<button type="button" class="select-account" data-action="switch-account" data-uid="${esc(a.id)}"><span class="avatar">${esc(a.name.slice(0,2))}</span><span class="name"><strong>${esc(a.name)}</strong><small>${esc(roleName[a.role])} · ${esc(a.company||ui().loc(a.field)||'SkillBridge')}</small></span><span>→</span></button>`).join('')+
-  `<div class="actions" style="margin-top:18px"><button type="button" class="btn btn-soft" data-action="open-register">＋ ${term('Создать демо-профиль','Демо профиль жасау')}</button></div>`; break;
+  title=term('Добро пожаловать','Қош келдіңіз');
+  body=`<p class="muted">${term('Как вы хотите использовать SkillBridge?','SkillBridge платформасын қалай пайдаланасыз?')}</p><div class="auth-tabs">${['performer','business'].map(role=>`<button class="btn btn-line" data-action="begin-auth" data-role="${role}">${esc(ui().t(role==='performer'?'rolePerformer':'roleBusiness'))}</button>`).join('')}</div>`;break;
  }
- case 'register':{
-  title=term('Создать демо-профиль','Демо профиль жасау');body=warn(term('Локальный учебный аккаунт без пароля. Не вводите личные документы.','Құпиясөзсіз жергілікті оқу аккаунты. Құжат енгізбеңіз.'))+
-  `<form data-form="register" class="form-grid">${formField('name',term('Имя','Аты'),'','text','required minlength="2" maxlength="70"')}
-  <div class="field"><label for="f-role">${term('Роль','Рөл')}</label><select id="f-role" name="role"><option value="performer">${esc(ui().t('rolePerformer'))}</option><option value="business">${esc(ui().t('roleBusiness'))}</option></select></div>
-  <div data-register-company hidden>${formField('company',term('Название компании','Компания атауы'),'','text','disabled minlength="2" maxlength="120"')}</div>
-  ${textarea('bio',term('Описание (по желанию)','Сипаттама (міндетті емес)'),'','maxlength="1000"')}${actions(term('Создать аккаунт','Аккаунт жасау'))}</form>`;break;
+ case 'auth':{
+  const role=m.role==='business'?'business':'performer',register=m.register!==false;
+  title=ui().t(role==='business'?'roleBusiness':'rolePerformer');
+  body=`<div class="auth-tabs"><button class="btn ${register?'btn-primary':'btn-line'}" data-action="auth-mode" data-mode="register">${term('Регистрация','Тіркелу')}</button><button class="btn ${!register?'btn-primary':'btn-line'}" data-action="auth-mode" data-mode="login">${term('Вход','Кіру')}</button></div><p class="hint">${term('Учебный аккаунт сохраняется в этом браузере. Используйте отдельный демонстрационный пароль.','Оқу аккаунты осы браузерде сақталады. Жеке демо құпиясөзін пайдаланыңыз.')}</p><form data-form="${register?'register':'login'}" class="form-grid"><input type="hidden" name="role" value="${role}">${register?formField('name',term('Имя','Аты'),'','text','required minlength="2" maxlength="70"'):''}
+  ${formField('email','Email','','email','required maxlength="254" autocomplete="email"')}
+  ${formField('password',term('Пароль','Құпиясөз'),'','password','required minlength="8" maxlength="128" autocomplete="'+(register?'new-password':'current-password')+'"')}
+  ${register&&role==='business'?formField('company',term('Название компании','Компания атауы'),'','text','required minlength="2" maxlength="120"'):''}
+  ${register?textarea('bio',term('О себе (необязательно)','Өзіңіз туралы (міндетті емес)'),'','maxlength="1000"'):''}
+  ${actions(register?term('Создать аккаунт','Аккаунт жасау'):term('Войти','Кіру'))}</form>`;break;
  }
  case 'order':{
   const srv=service(m.sid);if(!srv){return '';}title=term('Новое микро-задание','Жаңа шағын тапсырма');wide=true;
@@ -102,7 +103,7 @@ function navigate(route,oid=null){state.modal=null;if(route==='landing'){state.r
  const allowed={business:['dashboard','catalog','orders','messages','notifications','profile','order-detail','faq','about'],performer:['dashboard','opportunities','mytasks','screening','portfolio','earnings','messages','notifications','profile','order-detail','faq','about'],admin:['dashboard','admin-orders','admin-performers','qa','disputes','finance','messages','notifications','profile','order-detail','faq','about','data']};
  if(!allowed[role].includes(route)){toast(term('Этот раздел не доступен выбранной роли.','Бұл бөлім осы рөлге қолжетімсіз.'),true);return;}
  state.route=route;state.orderId=oid||state.orderId;state.mobile=false;state.filters={query:'',status:'',category:''};if(route==='messages'){const available=d().orders.filter(o=>window.SBData.visible(o,state.uid)).sort((a,b)=>new Date(b.updatedAt||b.createdAt)-new Date(a.updatedAt||a.createdAt));if(!available.some(o=>o.id===state.inbox.threadId))state.inbox.threadId=available[0]?.id||null;if(state.inbox.threadId)window.SBData.markThreadRead(state.uid,state.inbox.threadId);}render();}
-function choose(uid){const u=window.SBData.user(uid);if(!u){toast('Account not found.',true);return;}state.uid=uid;state.modal=null;state.route='dashboard';state.orderId=null;state.filters={query:'',status:'',category:''};state.inbox={threadId:null,query:'',filter:'all',mobileChat:false,drafts:{}};state.mobile=false;try{sessionStorage.setItem('sb-current-user',uid);}catch(e){}render();toast(term(`Вы вошли как ${u.name} (DEMO)`,`Сіз ${u.name} ретінде кірдіңіз (DEMO)`));}
+function choose(uid){if(uid!==authenticatedUid)return;const u=window.SBData.user(uid);if(!u){toast('Account not found.',true);return;}state.uid=uid;state.modal=null;state.route='dashboard';state.orderId=null;state.filters={query:'',status:'',category:''};state.inbox={threadId:null,query:'',filter:'all',mobileChat:false,drafts:{}};state.mobile=false;try{sessionStorage.setItem('sb-current-user',uid);}catch(e){}render();toast(term(`Вы вошли как ${u.name} (DEMO)`,`Сіз ${u.name} ретінде кірдіңіз (DEMO)`));}
 function open(type,meta={}){state.modal={type,...meta};render(true);}
 function close(){state.modal=null;render(true);}
 function tryAction(fn,success){try{let x=fn();if(success)toast(success);render(true);return x;}catch(e){toast(e.message||term('Операция не выполнена.','Әрекет орындалмады.'),true);}}
@@ -110,11 +111,29 @@ const success=msg=>toast(msg||term('Действие сохранено в JSON.
 const confirmAction=(question,fn)=>{if(window.confirm(question))return tryAction(fn,term('Готово','Дайын'));};
 function certificate(oid){const o=getOrder(oid);if(o.status!=='completed'||o.performerId!==state.uid)throw Error('Certificate available after completion for the assigned performer only.');const stu=getUser();const title=ui().loc(service(o.serviceId)?.title)||'';const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 580"><rect width="960" height="580" fill="#101a2b"/><rect x="30" y="30" width="900" height="520" fill="none" stroke="#14b8a6" stroke-width="4"/><text x="70" y="122" font-size="38" fill="#14b8a6" font-family="Arial" font-weight="bold">SkillBridge</text><text x="70" y="190" font-size="17" fill="#bedad7" font-family="Arial">DEMONSTRATION ONLY — NOT AN ACCREDITED QUALIFICATION</text><text x="70" y="280" font-size="37" fill="#fff" font-family="Arial" font-weight="bold">${esc(stu.name)}</text><text x="70" y="336" font-size="22" fill="#ddd" font-family="Arial">completed a demo Micro-Case</text><text x="70" y="378" font-size="26" fill="#14b8a6" font-family="Arial">${esc(title)}</text><text x="70" y="465" font-size="16" fill="#d3dce2" font-family="Arial">${esc(o.id)}  |  ${new Date(o.updatedAt).toISOString().slice(0,10)}  |  DEMO</text></svg>`;const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));let a=document.createElement('a');a.href=url;a.download=`SkillBridge-DEMO-${o.id}.svg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);toast(term('Демо-сертификат сохранен в SVG.','Демо сертификат SVG ретінде сақталды.'));}
 async function prepareFile(file){if(!file)return null;if(file.size>5_000_000)throw Error(term('Файл больше 5 MB; выберите меньший демо-файл.','Файл 5 MB-тен үлкен.'));const v={name:file.name,size:file.size,type:file.type||'application/octet-stream',demo:true};if(file.size<=131072&&(/\.(txt|md|csv|tsv|json)$/i.test(file.name)||file.type.startsWith('text/'))){v.content=await file.text();}return v;}
+async function passwordHash(password,salt){
+ const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveBits']);
+ const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:new TextEncoder().encode(salt),iterations:210000,hash:'SHA-256'},key,256);
+ return Array.from(new Uint8Array(bits),v=>v.toString(16).padStart(2,'0')).join('');
+}
 async function submitForm(form){const fd=new FormData(form), type=form.dataset.form;const val=k=>str(fd.get(k)||'').trim();const uid=state.uid;
  try{
  switch(type){
  case 'register':{
-  const role=val('role'),name=val('name'),org=val('company');if(!['performer','business'].includes(role))throw Error('Invalid role');if(name.length<2||name.length>70)throw Error(term('Введите имя длиной 2–70 символов.','Есім 2–70 таңбадан тұруы керек.'));if(role==='business'&&(org.length<2||org.length>120))throw Error(term('Введите название компании (2–120 символов).','Компания атауын енгізіңіз (2–120 таңба).'));const id=window.SBData.id(role==='performer'?'s':'b');const u={id,role,name,company:role==='business'?org:'',field:'',bio:val('bio').slice(0,1000),skills:[],available:true,demo:true};d().users.push(u);window.SBStorage.save();choose(id);return;
+  const role=val('role'),name=val('name'),company=val('company'),email=val('email').toLowerCase(),password=fd.get('password');
+  if(!['performer','business'].includes(role)||name.length<2||name.length>70||!email.includes('@')||password.length<8||password.length>128)throw Error(term('Проверьте поля регистрации.','Тіркелу өрістерін тексеріңіз.'));
+  if(role==='business'&&company.length<2)throw Error(term('Введите компанию.','Компания атауын енгізіңіз.'));
+  if(d().users.some(u=>u.email===email&&u.role===role))throw Error(term('Аккаунт уже существует. Перейдите во вход.','Аккаунт бар. Кіру бөлімін таңдаңыз.'));
+  const salt=crypto.randomUUID(),hash=await passwordHash(password,salt),id=window.SBData.id('user');
+  d().users.push({id,role,name,email,auth:{salt,hash},company:role==='business'?company:'',field:'',bio:val('bio').slice(0,1000),skills:[],available:true,demo:true});
+  if(!window.SBStorage.save()){d().users.pop();throw Error(term('Браузер не сохранил аккаунт.','Браузер аккаунтты сақтамады.'));}
+  authenticatedUid=id;choose(id);return;
+ }
+ case 'login':{
+  const role=val('role'),email=val('email').toLowerCase();
+  const user=d().users.find(u=>u.role===role&&['business','performer'].includes(role)&&u.email===email&&u.auth);
+  if(!user||await passwordHash(fd.get('password'),user.auth.salt)!==user.auth.hash)throw Error(term('Неверный email или пароль.','Email немесе құпиясөз қате.'));
+  authenticatedUid=user.id;choose(user.id);return;
  }
  case 'create-order':{
   const file=await prepareFile(fd.get('source') instanceof File&&fd.get('source').size?fd.get('source'):null);
@@ -153,9 +172,11 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
  case 'menu':state.mobile=!state.mobile;render(true);break;
  case 'language':window.SBData.changeLanguage(isKz()?'ru':'kz');render(true);toast(term('Язык переключен.','Тіл ауыстырылды.'));break;
  case 'account-picker':open('account');break;
- case 'open-register':open('register');break;
+ case 'begin-auth':open('auth',{role:el.dataset.role});break;
+ case 'auth-mode':open('auth',{role:state.modal.role,register:el.dataset.mode==='register'});break;
+ case 'logout':authenticatedUid=null;state.uid=null;sessionStorage.removeItem('sb-current-user');navigate('landing');break;
  case 'switch-account':choose(el.dataset.uid);break;
- case 'start-order':if(getUser()?.role!=='business'){choose('b1');}open('order',{sid});break;
+ case 'start-order':if(getUser()?.role!=='business'){open('auth',{role:'business'});return;}open('order',{sid});break;
  case 'apply':tryAction(()=>window.SBData.apply(state.uid,oid),term('Отклик отправлен.','Өтінім жіберілді.'));break;
  case 'open-pay':open('pay',{oid});break;
  case 'open-test':open('test',{sid});break;
@@ -187,7 +208,7 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
 }
 const SBApp={uid:()=>state.uid,route:()=>state.route,orderId:()=>state.orderId,mobileOpen:()=>state.mobile,filters:()=>state.filters,inboxState:()=>state.inbox,render,navigate,choose,open,reset:()=>window.SBStorage.reset()};
 window.SBApp=SBApp;
-function initialize(){window.SBStorage.load();try{const selected=sessionStorage.getItem('sb-current-user');if(selected&&window.SBData.user(selected))state.uid=selected;}catch(e){}state.route='landing';render();
+function initialize(){window.SBStorage.load();state.route='landing';render();
  document.addEventListener('click',e=>{const act=e.target.closest('[data-action]');if(act){e.preventDefault();clicked(act);return;}if(e.target.matches('[data-modal-backdrop]'))close();});
  document.addEventListener('submit',e=>{const form=e.target.closest('form[data-form]');if(!form)return;e.preventDefault();if(form.reportValidity())submitForm(form);});
  const importer=$('#json-import');importer?.addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>3_000_000)throw Error('JSON слишком большой (максимум 3 MB).');window.SBStorage.importData(await f.text());state.modal=null;state.filters={query:'',status:'',category:''};if(!window.SBData.user(state.uid))state.uid=null;render();toast(term('JSON успешно импортирован.','JSON сәтті импортталды.'));}catch(err){toast(err.message,true);}finally{importer.value='';}});
