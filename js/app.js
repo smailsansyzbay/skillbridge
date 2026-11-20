@@ -39,11 +39,11 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
   ${actions(term('Создать и открыть профиль','Профильді жасап ашу'))}</form>`;break;
  }
  case 'order':{
-  const srv=service(m.sid);if(!srv){return '';}title=term('Новое микро-задание','Жаңа шағын тапсырма');wide=true;
-  body=`<div class="info"><strong>${esc(ui().loc(srv.title))}</strong> · ${money(srv.price)} · ${term('срок 3 рабочих дня','мерзім 3 жұмыс күні')}</div>
-  <form data-form="create-order" class="form-grid"><input type="hidden" name="sid" value="${esc(srv.id)}">
-  ${formField('title',term('Название задания','Тапсырма атауы'),srv.id==='catalog'?term('Подготовить карточки новых товаров','Жаңа тауар карточкаларын дайындау'):srv.id==='excel'?term('Привести данные в порядок','Деректерді реттеу'):term('Сравнить пять конкурентов','Бес бәсекелесті салыстыру'),'text','required minlength="5" maxlength="130"')}
-  ${formField('deadline',''+term('Срок выполнения','Орындалу мерзімі'),term('3 рабочих дня','3 жұмыс күні'),'text','disabled')}
+  const custom=m.sid==='custom',srv=service(custom?'catalog':m.sid);if(!srv){return '';}title=term('Новое микро-задание','Жаңа шағын тапсырма');wide=true;
+  body=`<div class="info"><strong>${custom?term('Свой заказ','Жеке тапсырыс'):esc(ui().loc(srv.title))}</strong> · ${custom?term('Ваш срок и цена · комиссия 15%','Сіздің мерзіміңіз бен бағаңыз · комиссия 15%'):money(srv.price)+' · '+term('срок 3 рабочих дня','мерзім 3 жұмыс күні')}</div>
+  <form data-form="create-order" class="form-grid"><input type="hidden" name="custom" value="${custom?'yes':'no'}">${custom?`<div class="field span2"><label>${term('Необходимая компетенция','Қажетті дағды')}</label><select name="sid">${d().services.map(s=>`<option value="${s.id}">${esc(ui().loc(s.title))}</option>`).join('')}</select><small class="hint">${term('Исполнитель подбирается по тесту выбранной категории. Результат проверяется по её критериям QA.','Орындаушы таңдалған санат тесті бойынша іріктеледі. Нәтиже сол санаттың QA талаптарымен тексеріледі.')}</small></div>`: `<input type="hidden" name="sid" value="${esc(srv.id)}">`}
+  ${formField('title',term('Название задания','Тапсырма атауы'),custom?'':srv.id==='catalog'?term('Подготовить карточки новых товаров','Жаңа тауар карточкаларын дайындау'):srv.id==='excel'?term('Привести данные в порядок','Деректерді реттеу'):term('Сравнить пять конкурентов','Бес бәсекелесті салыстыру'),'text','required minlength="5" maxlength="130"')}
+  ${custom?formField('days',term('Срок в рабочих днях','Жұмыс күндерінің саны'),'3','number','required min="1" max="365" step="1"')+formField('price',term('Цена заказа, ₸','Тапсырыс бағасы, ₸'),'20000','number','required min="1" max="10000000" step="1"'):formField('deadline',term('Срок выполнения','Орындалу мерзімі'),term('3 рабочих дня','3 жұмыс күні'),'text','disabled')}
   ${textarea('brief',term('Подробное техническое задание','Техникалық тапсырманың толық сипаттамасы'),'', 'required minlength="25" maxlength="3500" placeholder="'+esc(term('Что нужно получить? Укажите исходные данные, состав результата и критерии приемки.','Не алу керек? Бастапқы ақпарат, нәтиже және қабылдау шарттары.'))+'"')}
   ${textarea('notes',term('Дополнительные условия','Қосымша шарттар'),'', 'maxlength="2000"')}
   <div class="field span2"><label>${term('Файл с исходными данными (необязательно, до 128 KB для текстовых файлов)','Бастапқы файл (міндетті емес)')}</label><input type="file" name="source" accept=".txt,.csv,.json,.md,.tsv,.xlsx,.pdf"><small class="hint">${term('Только синтетические данные. Для бинарных файлов сохраняются только метаданные.','Тек демо деректер. Кейбір файлдардың тек атауы сақталады.')}</small></div>
@@ -124,7 +124,7 @@ async function submitForm(form){const fd=new FormData(form), type=form.dataset.f
  }
  case 'create-order':{
   const file=await prepareFile(fd.get('source') instanceof File&&fd.get('source').size?fd.get('source'):null);
-  const o=window.SBData.createOrder(uid,{serviceId:val('sid'),title:val('title'),brief:val('brief'),notes:val('notes'),inputFile:file});state.modal=null;state.orderId=o.id;state.route='order-detail';render();success(term('Заказ создан. Следующий шаг — DEMO оплата.','Тапсырыс жасалды. Келесі қадам — DEMO төлем.'));return;
+  const o=window.SBData.createOrder(uid,{serviceId:val('sid'),custom:val('custom')==='yes',price:val('price'),days:val('days'),title:val('title'),brief:val('brief'),notes:val('notes'),inputFile:file});state.modal=null;state.orderId=o.id;state.route='order-detail';render();success(term('Заказ создан. Следующий шаг — DEMO оплата.','Тапсырыс жасалды. Келесі қадам — DEMO төлем.'));return;
  }
  case 'pay':window.SBData.pay(uid,val('oid'));break;
  case 'skill-test':{

@@ -22,6 +22,8 @@ Existing local JSON records remain available, including profiles created in earl
 
 Nominal performer share: **85% = 17 000 ₸**. Platform transaction commission: **15% = 3 000 ₸**. The commission is platform revenue **before** expenses, not net profit. Delivery target: three working days after an accepted complete brief, with one in-scope revision. No actual price, banking, tax or delivery commitments are offered by this prototype.
 
+Custom Order is the fourth catalog option. Customers select a competency category and provide a title, brief, price (1–10,000,000 ₸) and duration (1–365 working days). Matching and QA use the selected category. The platform commission remains 15%. Existing standard services retain their demo prices and delivery targets.
+
 ## Features
 
 - Landing page, service catalog and responsive dashboards for customer, performer and administrator.

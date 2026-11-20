@@ -127,3 +127,22 @@ localStorage.setItem('skillbridge_demo_previous_snapshot_v1',legacyJson);
 storage.restore();
 assertMigrated();
 console.log('PASS: roles, skills and availability, order lifecycle, QA, 15% commission, reviews, inbox persistence and v1 JSON migration.');
+
+// Custom prices must flow through funding, QA and the final ledger.
+const custom=api.createOrder('b1',{custom:true,serviceId:'catalog',title:'Индивидуальный каталог',brief:'Подготовить карточки товаров по индивидуальному техническому заданию.',price:35000,days:7});
+assert.equal(custom.targetWorkingDays,7);
+assert.equal(api.priceFor(custom),35000);
+assert.equal(api.commission(custom),5250);
+assert.equal(api.share(custom),29750);
+assert.throws(()=>api.createOrder('b1',{custom:true,serviceId:'catalog',title:'Некорректный заказ',brief:'Достаточно подробное описание тестового задания.',price:-1,days:0}));
+api.pay('b1',custom.id);
+api.assign('a1',custom.id,'s1');
+api.start('s1',custom.id);
+api.submit('s1',custom.id,{text:'Подготовлены карточки по согласованным требованиям.'});
+api.qa('a1',custom.id,true,'Принято',[true,true,true,true]);
+api.accept('b1',custom.id);
+api.release('a1',custom.id);
+assert.equal(storage.state().ledger.find(x=>x.orderId===custom.id&&x.type==='demo_platform_commission').amount,5250);
+storage.importData(JSON.stringify(storage.state()));
+assert.equal(api.priceFor(api.order(custom.id)),35000);
+console.log('PASS: custom order price, duration, validation, workflow, commission and JSON persistence.');

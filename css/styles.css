@@ -134,3 +134,8 @@
 .demo-account-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.demo-account-group{padding:20px;background:var(--bg);border:1px solid var(--line);border-radius:18px;min-width:0}.demo-account-group:only-child{grid-column:1/-1}.demo-account-group h3{margin:0 0 16px}.demo-account-group .select-account{background:white}.demo-account-group .name{min-width:0;overflow-wrap:anywhere}@media(max-width:600px){.demo-account-groups{grid-template-columns:1fr;gap:14px}.demo-account-group{padding:14px}}
 
 .demo-add-user{width:100%;margin-top:14px;border-style:dashed;justify-content:center}
+
+/* Warm, colorful workspace */
+:root{font-family:'Avenir Next','Trebuchet MS',system-ui,sans-serif;--bg:#f5f0e9;--soft:#eee8f5;--ink:#263044;--line:#e1dce9}
+body{background:radial-gradient(ellipse at 5% 10%,#e4dcf8 0,transparent 45%),radial-gradient(ellipse at 95% 65%,#deefd7 0,transparent 45%),#f5f0e9;background-attachment:fixed}
+.main-area,.content{background:transparent}.section.alt{background:#ece8f2}.service-card,.surface,.stat{background:#fffdf9}.service-card:nth-child(2) .service-image{background:#eee2fc;color:#7855a5}.service-card:nth-child(3) .service-image{background:#ffe9c4;color:#93652b}.custom-order-card{background:linear-gradient(145deg,#e5f2ce,#e1eee9);border-color:#c7dbb5}.custom-order-card .service-image{background:#d2e9b8;color:#356835}.app-header{background:#faf7f2eF}.modal{background:#fffdf9}.demo-account-group{background:#f0ebf6}h1,h2,h3{letter-spacing:-.035em}
