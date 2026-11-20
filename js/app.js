@@ -38,6 +38,11 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
   ${textarea('bio',term('О себе (необязательно)','Өзіңіз туралы (міндетті емес)'),'','maxlength="1000"')}
   ${actions(term('Создать и открыть профиль','Профильді жасап ашу'))}</form>`;break;
  }
+ case 'refund-request':{
+  title=term('Запросить возврат','Қайтаруды сұрау','Request a refund');
+  const orders=d().orders.filter(order=>order.businessId===uid&&['client_review','revision_requested'].includes(order.status));
+  body=`<p class="hint">${term('Возврат рассматривает администратор через спор по заказу. Выберите результат на проверке или заказ, возвращённый на доработку, и опишите причину.','Қайтаруды әкімші тапсырыс дауы арқылы қарайды. Тексерудегі немесе түзетуге жіберілген тапсырысты таңдап, себебін жазыңыз.','The administrator reviews refunds through the order dispute process. Choose a deliverable under review or an order returned for revision, then explain the issue.')}</p>${orders.length?`<form data-form="refund-request"><div class="field"><label for="refund-order">${ui().t('orders')}</label><select id="refund-order" name="oid" required>${orders.map(order=>`<option value="${esc(order.id)}">${esc(order.id)} · ${esc(order.title)} · ${money(window.SBData.priceFor(order))}</option>`).join('')}</select></div>${actions(term('Указать причину','Себебін көрсету','Explain the issue'))}</form>`:`<div class="info">${term('Пока нет заказов, для которых доступен новый запрос возврата. Проверьте статусы в разделе «Мои заказы». Уже открытые споры отображаются в финансах.','Жаңа қайтару сұрауына қолжетімді тапсырыс жоқ. «Менің тапсырыстарым» бөлімінен мәртебелерді қараңыз. Ашылған даулар қаржы бөлімінде көрінеді.','No orders are eligible for a new refund request right now. Check My Orders for their status. Existing disputes appear in Finances.')}</div><button class="btn btn-primary" data-action="navigate" data-route="orders">${ui().t('orders')}</button>`}`;break;
+ }
  case 'withdraw':{
   const balance=window.SBData.wallet(uid);
   title=term('Вывод на счёт','Шотқа шығару','Withdraw to account');
@@ -167,7 +172,7 @@ function render(keepScroll=false){let scroll=window.scrollY;rememberNavigation()
 function navigate(route,oid=null,department=null){if(route==='catalog')state.catalogDepartment=department;state.modal=null;if(route==='landing'){state.route='landing';state.orderId=null;state.mobile=false;render();return;}
  if(!getUser()){state.modal={type:'account'};state.route='landing';render();return;}
  const role=getUser().role;
- const allowed={business:['dashboard','catalog','orders','messages','notifications','profile','order-detail','faq','about'],performer:['dashboard','opportunities','mytasks','screening','portfolio','earnings','messages','notifications','profile','order-detail','faq','about'],admin:['dashboard','admin-orders','admin-performers','qa','disputes','finance','messages','notifications','profile','order-detail','faq','about','data']};
+ const allowed={business:['dashboard','catalog','customer-finance','orders','messages','notifications','profile','order-detail','faq','about'],performer:['dashboard','opportunities','mytasks','screening','portfolio','earnings','messages','notifications','profile','order-detail','faq','about'],admin:['dashboard','admin-orders','admin-performers','qa','disputes','finance','messages','notifications','profile','order-detail','faq','about','data']};
  if(!allowed[role].includes(route)){toast(term('Этот раздел не доступен выбранной роли.','Бұл бөлім осы рөлге қолжетімсіз.'),true);return;}
  state.route=route;state.orderId=oid||state.orderId;state.mobile=false;state.filters={query:'',status:'',category:''};if(route==='messages'){const available=d().orders.filter(o=>window.SBData.visible(o,state.uid)).sort((a,b)=>new Date(b.updatedAt||b.createdAt)-new Date(a.updatedAt||a.createdAt));if(!available.some(o=>o.id===state.inbox.threadId))state.inbox.threadId=available[0]?.id||null;if(state.inbox.threadId)window.SBData.markThreadRead(state.uid,state.inbox.threadId);}render();}
 function choose(uid){const u=window.SBData.user(uid);if(!u){toast('Account not found.',true);return;}state.uid=uid;state.modal=null;state.route='dashboard';state.orderId=null;state.filters={query:'',status:'',category:''};state.inbox={threadId:null,query:'',filter:'all',mobileChat:false,drafts:{}};state.mobile=false;try{sessionStorage.setItem('sb-current-user',uid);}catch(e){}render();toast(term(`Вы вошли как ${u.name} (DEMO)`,`Сіз ${u.name} ретінде кірдіңіз (DEMO)`,`Selected ${u.name} (demo)`));}
@@ -216,6 +221,7 @@ async function submitForm(form){const fd=new FormData(form), type=form.dataset.f
   if(!window.SBStorage.save()){d().users.pop();throw Error(term('Не удалось сохранить профиль в браузере.','Профиль браузерде сақталмады.'));}
   choose(user.id);return;
  }
+ case 'refund-request':open('dispute',{oid:val('oid')});return;
  case 'withdraw':{
   const amount=Number(val('amount')),lastFour=val('lastFour');
   if(!Number.isSafeInteger(amount)||amount<=0||amount>window.SBData.wallet(uid).available||!/^\d{4}$/.test(lastFour))throw Error(term('Проверьте сумму и четыре цифры демо-счёта.','Сома мен демо шоттың төрт санын тексеріңіз.','Check the amount and four demo account digits.'));
@@ -274,6 +280,7 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
  case 'add-demo-user':open('new-demo-user',{role:el.dataset.role});break;
  case 'open-department':navigate('catalog',null,el.dataset.department);break;
  case 'service-info':open('service-info',{sid});break;
+ case 'request-refund':open('refund-request');break;
  case 'open-withdraw':open('withdraw',{requestId:window.SBData.id('request')});break;
  case 'begin-demo':open('account',{role:el.dataset.role});break;
  case 'logout':state.uid=null;sessionStorage.removeItem('sb-current-user');navigate('landing');break;

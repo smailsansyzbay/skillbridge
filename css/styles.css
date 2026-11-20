@@ -414,3 +414,10 @@ body.workspace-active .modal h2{font-weight:500;font-size:28px}
 .qa-saved h3{font-size:23px;font-weight:500}
 .qa-saved p{font-size:14px;line-height:1.8;color:#80956e}
 @media(max-width:650px){.qa-contact-card{flex-wrap:wrap;padding:20px;gap:14px}.qa-contact-card>div{flex-basis:calc(100% - 65px)}.qa-whatsapp{margin-left:62px}.assessment-question{padding:14px}.assessment-question legend{font-size:16px;padding:0 5px}.assessment-options label{padding:13px;font-size:13px}.assessment-scenario{font-size:13px}.assessment-intro{padding:20px}.assessment-intro h3{font-size:21px}.assessment-result{gap:16px;padding:20px}.assessment-score{font-size:29px}.assessment-result h3{font-size:20px}.qa-chat-preview>p{margin:15px;padding:16px}}
+.customer-refund-guide{padding:28px;border:1px solid #d7e5ce;background:#f4f9ed;border-radius:18px;margin-top:24px}
+.customer-refund-guide h3{margin:0 0 24px;font-size:20px;font-weight:500}
+.customer-refund-guide>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px}
+.customer-refund-guide strong{font-weight:500;font-size:15px;color:#567344}
+.customer-refund-guide p{font-size:13px;line-height:1.8;color:#82966e;margin:10px 0 0}
+.earnings-transaction-total .btn{display:flex;margin-top:8px;font-size:11px;padding:6px 10px}
+@media(max-width:650px){.customer-refund-guide{padding:22px}.customer-refund-guide>div{grid-template-columns:1fr;gap:20px}}

@@ -234,3 +234,35 @@ assert.throws(()=>api.requestQaCall('s4',{slot:'invalid',requestId:'invalid-call
 storage.importData(JSON.stringify(storage.state()));
 assert.equal(storage.state().activityLog.find(entry=>entry.id===call.id).slot,'afternoon');
 console.log('PASS: detailed multilingual assessments, answer validation and persistent, idempotent QA demo call requests.');
+
+// Customer funds become available only after an approved order refund.
+const specialistBeforeRefund=api.wallet('s1').available;
+const refundOrder=api.createOrder('b1',{serviceId:'catalog',custom:true,price:36000,days:5,title:'Заказ для проверки возврата',brief:'Подготовить каталог согласно согласованным данным и критериям приёмки.'});
+api.pay('b1',refundOrder.id);
+api.assign('a1',refundOrder.id,'s1');
+api.start('s1',refundOrder.id);
+api.submit('s1',refundOrder.id,{text:'Представлен демонстрационный результат для проверки.'});
+api.qa('a1',refundOrder.id,true,'Принято',[true,true,true,true]);
+assert.throws(()=>api.dispute('b2',refundOrder.id,'Отсутствует часть согласованного результата.'));
+api.dispute('b1',refundOrder.id,'Отсутствует часть согласованного результата.');
+assert.equal(api.wallet('b1').pending,36000);
+assert.equal(api.wallet('b1').available,0);
+assert.throws(()=>api.withdraw('b1',{amount:1000,lastFour:'1234',requestId:'before-refund-approval'}));
+assert.throws(()=>api.resolve('b1',refundOrder.id,'refund'));
+api.resolve('a1',refundOrder.id,'refund');
+assert.equal(api.wallet('b1').available,36000);
+assert.equal(api.wallet('b1').pending,0);
+assert.throws(()=>api.resolve('a1',refundOrder.id,'refund'));
+const returned=api.withdraw('b1',{amount:11000,lastFour:'4321',requestId:'customer-refund-test'});
+assert.equal(returned.type,'demo_refund_withdrawal');
+assert.equal(api.wallet('b1').available,25000);
+assert.equal(api.wallet('b1').withdrawn,11000);
+assert.equal(api.withdraw('b1',{amount:11000,lastFour:'4321',requestId:'customer-refund-test'}).id,returned.id);
+assert.throws(()=>api.withdraw('b1',{amount:25001,lastFour:'4321',requestId:'customer-too-much'}));
+assert.throws(()=>api.withdraw('b2',{amount:1000,lastFour:'4321',requestId:'other-customer'}));
+assert.throws(()=>api.wallet('a1'));
+assert.equal(api.wallet('s1').available,specialistBeforeRefund);
+storage.importData(JSON.stringify(storage.state()));
+assert.equal(api.wallet('b1').available,25000);
+assert.equal(api.wallet('b1').credits.filter(entry=>entry.orderId===refundOrder.id).length,1);
+console.log('PASS: customer payments, pending disputes, approved refunds, isolated balances, bounded withdrawals and JSON persistence.');

@@ -81,25 +81,35 @@ function markAllRead(actor){return mutate(()=>{st().notifications.filter(x=>x.us
 function changeLanguage(lang){return mutate(()=>{requireThat(['ru','kz','en'].includes(lang),'Unsupported language.');st().settings.language=lang;});}
 function getPortfolio(uid){return st().orders.filter(o=>o.performerId===uid&&o.status==='completed').map(o=>({order:o,review:st().reviews.find(r=>r.orderId===o.id)}));}
 function wallet(uid){
- requireThat(hasRole(uid,'performer'),'Wallet is available to specialists only.');
- const credits=st().ledger.filter(entry=>entry.type==='demo_performer_payout'&&st().orders.some(o=>o.id===entry.orderId&&o.performerId===uid));
- const withdrawals=st().ledger.filter(entry=>entry.type==='demo_withdrawal'&&entry.userId===uid);
+ const role=user(uid)?.role;
+ requireThat(['performer','business'].includes(role),'Wallet is available to customers and specialists only.');
+ const isCustomer=role==='business',ownerKey=isCustomer?'businessId':'performerId',creditType=isCustomer?'demo_refund':'demo_performer_payout';
+ const withdrawalType=isCustomer?'demo_refund_withdrawal':'demo_withdrawal';
+ const ownedOrders=st().orders.filter(order=>order[ownerKey]===uid),orderIds=new Set(ownedOrders.map(order=>order.id));
+ const credits=st().ledger.filter(entry=>entry.type===creditType&&orderIds.has(entry.orderId));
+ const withdrawals=st().ledger.filter(entry=>entry.type===withdrawalType&&entry.userId===uid);
  const earned=credits.reduce((sum,entry)=>sum+entry.amount,0),withdrawn=withdrawals.reduce((sum,entry)=>sum+entry.amount,0);
- const pending=st().orders.filter(o=>o.performerId===uid&&o.status==='approved').reduce((sum,o)=>sum+share(o),0);
- return {earned,withdrawn,pending,available:Math.max(0,earned-withdrawn),credits,withdrawals};
+ const pendingOrders=ownedOrders.filter(order=>isCustomer?order.status==='disputed':order.status==='approved');
+ const pending=pendingOrders.reduce((sum,order)=>sum+(isCustomer?priceFor(order):share(order)),0);
+ const payments=isCustomer?st().ledger.filter(entry=>entry.type==='demo_funded'&&orderIds.has(entry.orderId)):[];
+ const paid=payments.reduce((sum,entry)=>sum+entry.amount,0);
+ const active=isCustomer?ownedOrders.filter(order=>order.demoPayment&&!['refunded','completed','cancelled'].includes(order.status)).reduce((sum,order)=>sum+priceFor(order),0):0;
+ return {earned,withdrawn,pending,available:Math.max(0,earned-withdrawn),credits,withdrawals,payments,paid,active,pendingOrders};
 }
 function withdraw(actor,input){
  // Refresh persisted funds before confirming a demo withdrawal.
  window.SBStorage.load();
- requireThat(hasRole(actor,'performer'),'Wallet is available to specialists only.');
+ const role=user(actor)?.role;
+ requireThat(['performer','business'].includes(role),'Wallet is available to customers and specialists only.');
+ const withdrawalType=role==='business'?'demo_refund_withdrawal':'demo_withdrawal';
  const amount=Number(input.amount),lastFour=String(input.lastFour||''),requestId=String(input.requestId||'');
  requireThat(Number.isSafeInteger(amount)&&amount>0,'Enter a positive whole amount.');
  requireThat(/^\d{4}$/.test(lastFour),'Enter four demo account digits.');
  requireThat(requestId.length>=8&&requestId.length<=100,'Invalid withdrawal request.');
- const previous=st().ledger.find(entry=>entry.type==='demo_withdrawal'&&entry.requestId===requestId&&entry.userId===actor);
+ const previous=st().ledger.find(entry=>entry.type===withdrawalType&&entry.requestId===requestId&&entry.userId===actor);
  if(previous){requireThat(previous.amount===amount&&previous.lastFour===lastFour,'Withdrawal request already used.');return previous;}
  requireThat(amount<=wallet(actor).available,'Insufficient available funds.');
- const entry={id:id('withdrawal'),type:'demo_withdrawal',userId:actor,amount,lastFour,provider:'freedom',requestId,createdAt:now(),demo:true};
+ const entry={id:id('withdrawal'),type:withdrawalType,userId:actor,amount,lastFour,provider:'freedom',requestId,createdAt:now(),demo:true};
  st().ledger.unshift(entry);
  if(!save()){st().ledger.shift();throw Error('Could not save the withdrawal.');}
  return entry;

@@ -52,6 +52,12 @@ Each assessment presents four practical scenarios, detailed answer choices and l
 
 The WhatsApp QA button opens a local conversation mockup. Specialists can record a preferred time of day and a discussion topic. The preference persists in the JSON activity log. No WhatsApp link is opened, no message is sent and no real call is booked.
 
+## Customer finances
+
+Customers have a separate Finances page showing order payments, funds in active orders, approved refunds, available refund balance and transfers to a Freedom demo account. Request a Refund opens the existing order-dispute workflow for deliverables under customer review or revision. Only an administrator-approved refund credits the customer balance. Disputed amounts are shown separately and remain unavailable while under review.
+
+Customer withdrawals use the same confirmation and available-balance validation as specialist rewards, with separate ledger transaction types and ownership checks. Payments, refunds and withdrawals persist in JSON. Banking actions remain local simulations and store only four fictional account digits.
+
 ## Features
 
 - Landing page, service catalog and responsive dashboards for customer, performer and administrator.
