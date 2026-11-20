@@ -53,7 +53,12 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
   const o=getOrder(m.oid);title=term('Подтвердить демо-оплату','Демо төлемді растау');
   body=`<div class="surface" style="margin-bottom:14px"><h3>${esc(o.title)}</h3><div class="metric-line"><span>${term('Сумма заказа','Тапсырыс сомасы')}</span><strong>${money(window.SBData.priceFor(o))}</strong></div><div class="metric-line"><span>${ui().t('performerShare')+' · 85%'}</span><strong>${money(window.SBData.share(o))}</strong></div><div class="metric-line"><span>SkillBridge 15%</span><strong>${money(window.SBData.commission(o))}</strong></div></div>
  ${warn('<strong>DEMO ONLY — No real money is transferred.</strong><br>'+term('Операция создаст запись в JSON. Ни карта, ни банковский счет не используются.','Тек JSON ішінде жазба жасалады. Банк карта қажет емес.'))}
- <form data-form="pay"><input type="hidden" name="oid" value="${esc(o.id)}">${actions(term('Подтвердить демо-оплату','Демо төлемді растау'))}</form>`;break;
+ <form data-form="pay"><input type="hidden" name="oid" value="${esc(o.id)}"><fieldset class="payment-methods"><legend>${term('Способ демо-оплаты','Демо төлем тәсілі')}</legend><label class="payment-option freedom"><input type="radio" name="provider" value="freedom" required checked><span class="payment-mark">F</span><span><strong>Freedom</strong><small>${term('Макет оплаты','Төлем макеті')}</small></span></label><label class="payment-option kaspi"><input type="radio" name="provider" value="kaspi" required><span class="payment-mark">K</span><span><strong>Kaspi</strong><small>${term('Макет оплаты','Төлем макеті')}</small></span></label></fieldset>${actions(term('Продолжить','Жалғастыру'))}</form>`;break;
+ }
+ case 'payment-preview':{
+  const o=getOrder(m.oid),provider=m.provider==='kaspi'?'Kaspi':'Freedom';
+  title=provider+' · '+term('Демо-оплата','Демо төлем');
+  body=`<div class="payment-preview ${m.provider==='kaspi'?'kaspi':'freedom'}"><span class="payment-mark">${provider[0]}</span><h3>${esc(provider)}</h3><p>${esc(o.title)}</p><strong class="payment-total">${money(window.SBData.priceFor(o))}</strong><p>${term('Макет подтверждения. Данные карты и банковского приложения не требуются.','Растау макеті. Карта немесе банк қосымшасының деректері қажет емес.')}</p></div><form data-form="confirm-demo-payment"><input name="oid" type="hidden" value="${esc(o.id)}"><input name="provider" type="hidden" value="${esc(m.provider)}">${actions(term('Подтвердить демо-оплату','Демо төлемді растау'))}</form>`;break;
  }
  case 'test':{
   const srv=service(m.sid);if(!srv)return '';title=term('Тест навыков','Дағдылар тесті')+' · '+ui().loc(srv.title);wide=true;
@@ -108,7 +113,33 @@ function close(){state.modal=null;render(true);}
 function tryAction(fn,success){try{let x=fn();if(success)toast(success);render(true);return x;}catch(e){toast(e.message||term('Операция не выполнена.','Әрекет орындалмады.'),true);}}
 const success=msg=>toast(msg||term('Действие сохранено в JSON.','Әрекет JSON-ға сақталды.'));
 const confirmAction=(question,fn)=>{if(window.confirm(question))return tryAction(fn,term('Готово','Дайын'));};
-function certificate(oid){const o=getOrder(oid);if(o.status!=='completed'||o.performerId!==state.uid)throw Error('Certificate available after completion for the assigned performer only.');const stu=getUser();const title=ui().loc(service(o.serviceId)?.title)||'';const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 580"><rect width="960" height="580" fill="#101a2b"/><rect x="30" y="30" width="900" height="520" fill="none" stroke="#14b8a6" stroke-width="4"/><text x="70" y="122" font-size="38" fill="#14b8a6" font-family="Arial" font-weight="bold">SkillBridge</text><text x="70" y="190" font-size="17" fill="#bedad7" font-family="Arial">DEMONSTRATION ONLY — NOT AN ACCREDITED QUALIFICATION</text><text x="70" y="280" font-size="37" fill="#fff" font-family="Arial" font-weight="bold">${esc(stu.name)}</text><text x="70" y="336" font-size="22" fill="#ddd" font-family="Arial">completed a demo Micro-Case</text><text x="70" y="378" font-size="26" fill="#14b8a6" font-family="Arial">${esc(title)}</text><text x="70" y="465" font-size="16" fill="#d3dce2" font-family="Arial">${esc(o.id)}  |  ${new Date(o.updatedAt).toISOString().slice(0,10)}  |  DEMO</text></svg>`;const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));let a=document.createElement('a');a.href=url;a.download=`SkillBridge-DEMO-${o.id}.svg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);toast(term('Демо-сертификат сохранен в SVG.','Демо сертификат SVG ретінде сақталды.'));}
+function certificate(oid){
+ const o=getOrder(oid);
+ if(o.status!=='completed'||o.performerId!==state.uid)throw Error(term('Сертификат доступен после завершения своего задания.','Сертификат өз тапсырмаңыз аяқталғаннан кейін қолжетімді.'));
+ const person=getUser(),title=ui().loc(service(o.serviceId)?.title)||'',date=new Intl.DateTimeFormat(isKz()?'kk-KZ':'ru-RU').format(new Date(o.updatedAt));
+ const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="850" viewBox="0 0 1200 850">
+ <defs><linearGradient id="paper" x2="1" y2="1"><stop stop-color="#fffdf7"/><stop offset="1" stop-color="#eef3e6"/></linearGradient></defs>
+ <rect width="1200" height="850" fill="url(#paper)"/><path d="M0 0h1200v32H0z" fill="#183d35"/>
+ <circle cx="1150" cy="80" r="200" fill="#dce9cd" opacity=".55"/><circle cx="0" cy="850" r="230" fill="#e6def1" opacity=".55"/>
+ <rect x="34" y="48" width="1132" height="766" rx="8" fill="none" stroke="#b6c5a5"/>
+ <g transform="translate(76 82)"><rect width="68" height="68" rx="21" fill="#183d35"/><path d="M16 43V28a8 8 0 0 1 16 0v15m4-18v15a8 8 0 0 0 16 0V25" fill="none" stroke="#baff73" stroke-width="6" stroke-linecap="round"/><path d="m28 34 6-6 6 6-6 6z" fill="#fff"/></g>
+ <g font-family="Arial,sans-serif" fill="#183d35"><text x="164" y="115" font-size="30" font-weight="bold">SkillBridge</text><text x="164" y="141" font-size="13" letter-spacing="2">SKILLS · WORK · OPPORTUNITY</text>
+ <text x="600" y="240" text-anchor="middle" font-size="51" font-family="Georgia,serif" letter-spacing="5">${term('СЕРТИФИКАТ','СЕРТИФИКАТ')}</text>
+ <text x="600" y="279" text-anchor="middle" font-size="16" letter-spacing="2">${term('О ВЫПОЛНЕНИИ ДЕМО-ЗАДАНИЯ','ДЕМО ТАПСЫРМАНЫ ОРЫНДАУ ТУРАЛЫ')}</text>
+ <path d="M485 307h230" stroke="#a7b68e"/>
+ <text x="600" y="358" text-anchor="middle" font-size="18" fill="#677467">${term('Выдан исполнителю','Орындаушыға берілді')}</text>
+ <foreignObject x="100" y="380" width="1000" height="100"><div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Georgia,serif;font-size:42px;text-align:center;color:#183d35;overflow-wrap:anywhere;line-height:1.1">${esc(person.name)}</div></foreignObject>
+ <text x="600" y="509" text-anchor="middle" font-size="18">${term('за выполнение задания и прохождение контроля качества','тапсырманы орындап, сапа тексеруінен өткені үшін')}</text>
+ <text x="600" y="550" text-anchor="middle" font-size="26" font-weight="bold">${esc(title)}</text>
+ <text x="90" y="669" font-size="14" fill="#677467">${term('Дата завершения','Аяқталған күні')}</text><text x="90" y="698" font-size="22">${esc(date)}</text>
+ <text x="90" y="745" font-size="13">ID · ${esc(o.id)}</text>
+ <path d="M490 695h240" stroke="#879978"/><text x="610" y="724" text-anchor="middle" font-size="15">SkillBridge · QA</text>
+ <g transform="translate(1000 679) rotate(-12)"><circle r="81" fill="#e5edda" stroke="#3d7059" stroke-width="3"/><circle r="71" fill="none" stroke="#3d7059" stroke-dasharray="2 4"/><text y="-27" text-anchor="middle" font-size="14" letter-spacing="2">SKILLBRIDGE</text><path d="m-22 0 15 15 30-32" fill="none" stroke="#3d7059" stroke-width="5" stroke-linecap="round"/><text y="43" text-anchor="middle" font-size="12" letter-spacing="2">DEMO · QA</text></g>
+ <text x="600" y="790" text-anchor="middle" font-size="12" fill="#677467">${term('Демонстрационный сертификат · Декоративная печать · Без официальной аккредитации','Демонстрациялық сертификат · Сәндік мөр · Ресми аккредитациясыз')}</text></g></svg>`;
+ const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'})),link=document.createElement('a');
+ link.href=url;link.download=`SkillBridge-Certificate-${o.id}.svg`;link.click();setTimeout(()=>URL.revokeObjectURL(url),2000);
+ toast(term('Сертификат сохранён.','Сертификат сақталды.'));
+}
 async function prepareFile(file){if(!file)return null;if(file.size>5_000_000)throw Error(term('Файл больше 5 MB; выберите меньший демо-файл.','Файл 5 MB-тен үлкен.'));const v={name:file.name,size:file.size,type:file.type||'application/octet-stream',demo:true};if(file.size<=131072&&(/\.(txt|md|csv|tsv|json)$/i.test(file.name)||file.type.startsWith('text/'))){v.content=await file.text();}return v;}
 async function submitForm(form){const fd=new FormData(form), type=form.dataset.form;const val=k=>str(fd.get(k)||'').trim();const uid=state.uid;
  try{
@@ -126,7 +157,8 @@ async function submitForm(form){const fd=new FormData(form), type=form.dataset.f
   const file=await prepareFile(fd.get('source') instanceof File&&fd.get('source').size?fd.get('source'):null);
   const o=window.SBData.createOrder(uid,{serviceId:val('sid'),custom:val('custom')==='yes',price:val('price'),days:val('days'),title:val('title'),brief:val('brief'),notes:val('notes'),inputFile:file});state.modal=null;state.orderId=o.id;state.route='order-detail';render();success(term('Заказ создан. Следующий шаг — DEMO оплата.','Тапсырыс жасалды. Келесі қадам — DEMO төлем.'));return;
  }
- case 'pay':window.SBData.pay(uid,val('oid'));break;
+ case 'pay':open('payment-preview',{oid:val('oid'),provider:val('provider')});return;
+ case 'confirm-demo-payment':window.SBData.pay(uid,val('oid'),val('provider'));break;
  case 'skill-test':{
   const sid=val('sid'),qs=window.SBTestBank[sid];const answers=qs.map((q,i)=>fd.has('q'+i)?Number(fd.get('q'+i)):-1);const r=window.SBData.test(uid,sid,answers);state.modal=null;render();toast(`${r.passed?'✓ Passed':'✕ Not passed'} · ${r.score}/${r.total}`,!r.passed);return;
  }
