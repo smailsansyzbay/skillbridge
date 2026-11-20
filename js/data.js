@@ -59,6 +59,30 @@ function markRead(actor,idv){return mutate(()=>{const n=st().notifications.find(
 function markAllRead(actor){return mutate(()=>{st().notifications.filter(x=>x.userId===actor).forEach(x=>x.read=true);});}
 function changeLanguage(lang){return mutate(()=>{requireThat(['ru','kz','en'].includes(lang),'Unsupported language.');st().settings.language=lang;});}
 function getPortfolio(uid){return st().orders.filter(o=>o.performerId===uid&&o.status==='completed').map(o=>({order:o,review:st().reviews.find(r=>r.orderId===o.id)}));}
+function wallet(uid){
+ requireThat(hasRole(uid,'performer'),'Wallet is available to specialists only.');
+ const credits=st().ledger.filter(entry=>entry.type==='demo_performer_payout'&&st().orders.some(o=>o.id===entry.orderId&&o.performerId===uid));
+ const withdrawals=st().ledger.filter(entry=>entry.type==='demo_withdrawal'&&entry.userId===uid);
+ const earned=credits.reduce((sum,entry)=>sum+entry.amount,0),withdrawn=withdrawals.reduce((sum,entry)=>sum+entry.amount,0);
+ const pending=st().orders.filter(o=>o.performerId===uid&&o.status==='approved').reduce((sum,o)=>sum+share(o),0);
+ return {earned,withdrawn,pending,available:Math.max(0,earned-withdrawn),credits,withdrawals};
+}
+function withdraw(actor,input){
+ // Refresh persisted funds before confirming a demo withdrawal.
+ window.SBStorage.load();
+ requireThat(hasRole(actor,'performer'),'Wallet is available to specialists only.');
+ const amount=Number(input.amount),lastFour=String(input.lastFour||''),requestId=String(input.requestId||'');
+ requireThat(Number.isSafeInteger(amount)&&amount>0,'Enter a positive whole amount.');
+ requireThat(/^\d{4}$/.test(lastFour),'Enter four demo account digits.');
+ requireThat(requestId.length>=8&&requestId.length<=100,'Invalid withdrawal request.');
+ const previous=st().ledger.find(entry=>entry.type==='demo_withdrawal'&&entry.requestId===requestId&&entry.userId===actor);
+ if(previous){requireThat(previous.amount===amount&&previous.lastFour===lastFour,'Withdrawal request already used.');return previous;}
+ requireThat(amount<=wallet(actor).available,'Insufficient available funds.');
+ const entry={id:id('withdrawal'),type:'demo_withdrawal',userId:actor,amount,lastFour,provider:'freedom',requestId,createdAt:now(),demo:true};
+ st().ledger.unshift(entry);
+ if(!save()){st().ledger.shift();throw Error('Could not save the withdrawal.');}
+ return entry;
+}
 function stats(uid){const d=st(),r=user(uid)?.role;const os=r==='admin'?d.orders:r==='business'?d.orders.filter(o=>o.businessId===uid):d.orders.filter(o=>o.performerId===uid);return {all:os.length,active:os.filter(o=>!['completed','refunded','cancelled'].includes(o.status)).length,complete:os.filter(o=>o.status==='completed').length,pending:os.filter(o=>['qa_review','client_review','disputed'].includes(o.status)).length,unread:d.notifications.filter(x=>x.userId===uid&&!x.read).length,payouts:d.ledger.filter(x=>x.type==='demo_performer_payout'&&(r==='performer'?order(x.orderId).performerId===uid:true)).reduce((a,b)=>a+b.amount,0),commissions:d.ledger.filter(x=>x.type==='demo_platform_commission').reduce((a,b)=>a+b.amount,0)};}
-window.SBData={user,service,order,hasRole,visible,qualification,share,commission,priceFor,createOrder,pay,cancel,apply,assign,start,submit,qa,revision,accept,dispute,resolve,release,review,message,unreadMessages,markThreadRead,test,updateProfile,markRead,markAllRead,changeLanguage,getPortfolio,stats,id,workingDeadline};
+window.SBData={wallet,withdraw,user,service,order,hasRole,visible,qualification,share,commission,priceFor,createOrder,pay,cancel,apply,assign,start,submit,qa,revision,accept,dispute,resolve,release,review,message,unreadMessages,markThreadRead,test,updateProfile,markRead,markAllRead,changeLanguage,getPortfolio,stats,id,workingDeadline};
 })();

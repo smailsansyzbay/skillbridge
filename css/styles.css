@@ -268,3 +268,35 @@ body.workspace-active .modal h2{font-family:'Helvetica Neue',Arial,'Segoe UI',sa
 body.workspace-active .modal h2{font-weight:500;font-size:28px}
 @media(max-width:700px){.app-shell .page-top h1,.app-shell .inbox-page-top h1{font-size:28px}}
 .app-shell .eyebrow{color:#729060}.app-shell .custom-order-card .service-price{font-size:22px}.app-shell .sidebar-bottom{border-color:#315b49}
+.earnings-overview{display:grid;grid-template-columns:minmax(290px,1fr) 1.5fr;gap:22px;margin-bottom:22px}
+.earnings-balance{padding:30px;border-radius:22px;background:radial-gradient(ellipse at 100% 0,#397758 0,transparent 65%),#173f32;color:#f6fff0;display:flex;flex-direction:column;align-items:flex-start}
+.earnings-balance-top{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;font-size:14px;color:#c5ddc8}
+.earnings-demo{font-size:10px;letter-spacing:.12em;border:1px solid #ffffff35;border-radius:30px;padding:4px 9px}
+.earnings-amount{font-size:clamp(34px,4vw,52px);font-weight:500;letter-spacing:-.045em;line-height:1.2;margin:22px 0 10px}
+.earnings-balance p{font-size:13px;line-height:1.7;color:#aac9b3;margin:0 0 24px;max-width:330px}
+.app-shell .earnings-balance .btn{background:#c7f391;color:#25452c;padding:13px 20px;border:0;margin-top:auto}
+.app-shell .earnings-balance .btn:hover:not(:disabled){background:#d4ffa0;box-shadow:none}
+.earnings-balance-foot{display:flex;align-items:center;gap:8px;font-size:11px;color:#a7c1ac;margin-top:20px}
+.earnings-balance-foot .ic{width:15px;height:15px}
+.earnings-summary{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.earnings-summary .stat{display:flex;flex-direction:column;justify-content:center}
+.app-shell .earnings-summary .stat .value{font-size:30px}
+.earnings-notice{display:flex;align-items:flex-start;gap:10px;color:#7a8e71;font-size:12px;line-height:1.7;margin:0 2px 28px;max-width:850px}
+.earnings-notice .ic{width:17px;height:17px;flex-shrink:0;margin-top:2px}
+.earnings-transaction{display:flex;align-items:center;gap:16px;padding:20px 0;border-bottom:1px solid var(--line)}
+.earnings-transaction:last-child{border:0}
+.earnings-transaction-icon{display:grid;place-items:center;width:44px;height:44px;flex-shrink:0;background:#e7f2d9;color:#628645;border-radius:14px}
+.earnings-transaction-icon.outgoing{background:#e4eeea;color:#597d70}
+.earnings-transaction-icon.outgoing .ic{transform:rotate(-45deg)}
+.earnings-transaction-copy{flex:1;min-width:0}
+.earnings-transaction-copy strong{display:block;font-size:14px;font-weight:500;overflow-wrap:anywhere}
+.earnings-transaction-copy>span{font-size:12px;color:#8c9d7d;display:block;margin-top:6px}
+.earnings-transaction-total{text-align:right;flex-shrink:0}
+.earnings-transaction-total strong{font-size:18px;font-weight:500;color:#426937}
+.earnings-transaction-total>span{display:block;font-size:11px;color:#8c9d7d;margin-top:6px}
+.earnings-empty{text-align:center;padding:35px 15px}
+.earnings-empty>span{display:grid;place-items:center;background:#edf4e4;border-radius:20px;width:64px;height:64px;margin:0 auto 20px;color:#82a164}
+.earnings-empty p{max-width:440px;margin:10px auto 24px;font-size:14px;line-height:1.8;color:#7f9373}
+.withdraw-available{display:flex;justify-content:space-between;padding:20px;background:#edf4e4;border-radius:14px;margin:20px 0;color:#59784a}
+@media(max-width:1000px){.earnings-overview{grid-template-columns:1fr}.earnings-balance{padding:26px}.earnings-amount{font-size:44px}}
+@media(max-width:480px){.earnings-summary{gap:10px}.app-shell .earnings-summary .stat{padding:16px}.app-shell .earnings-summary .stat .value{font-size:24px}.earnings-transaction{gap:10px;align-items:flex-start;flex-wrap:wrap}.earnings-transaction-copy{flex-basis:calc(100% - 60px)}.earnings-transaction-total{margin-left:54px;text-align:left}.earnings-balance{padding:24px}.earnings-amount{font-size:39px}}

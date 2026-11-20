@@ -28,6 +28,10 @@ Custom Order is the fourth catalog option. Customers select a competency categor
 
 The editorial home page presents role entry, task categories, the workflow and six expanded questions and answers. Pricing and financial demo details appear inside the order flow. The language button cycles Russian → Kazakh → English. Interface text, service descriptions, criteria and test questions use the selected language. Names, user-entered tasks and messages retain their original wording.
 
+## Specialist rewards
+
+The rewards page shows earned funds, available balance, pending operator credits and a combined credit/withdrawal history. Withdraw to Account records a simulated Freedom withdrawal after a separate confirmation. Only four fictional account digits are requested and stored. Amounts are limited to the available credited balance, duplicate requests are idempotent, and withdrawal records persist in JSON. No bank is contacted or real money transferred.
+
 ## Features
 
 - Landing page, service catalog and responsive dashboards for customer, performer and administrator.

@@ -158,3 +158,24 @@ assert.equal(context.SBI18n.text('Заказчики','Тапсырыс беру
 assert.equal(context.SBI18n.english(['Обязательные поля и цены'])[0],'Required fields and prices');
 assert.throws(()=>api.changeLanguage('unknown'));
 console.log('PASS: English state persistence and translated criteria.');
+
+// Withdrawals are simulated, bounded by earned funds, and safe to retry.
+const beforeWallet=api.wallet('s1');
+assert.ok(beforeWallet.available>0);
+assert.throws(()=>api.withdraw('b1',{amount:1,lastFour:'1234',requestId:'wrong-role'}));
+assert.throws(()=>api.withdraw('s1',{amount:beforeWallet.available+1,lastFour:'1234',requestId:'too-large'}));
+assert.throws(()=>api.withdraw('s1',{amount:1,lastFour:'12345',requestId:'bad-account'}));
+const withdrawal=api.withdraw('s1',{amount:1000,lastFour:'1234',requestId:'wallet-test-1'});
+assert.equal(api.wallet('s1').available,beforeWallet.available-1000);
+assert.equal(api.wallet('s1').withdrawn,1000);
+assert.equal(api.withdraw('s1',{amount:1000,lastFour:'1234',requestId:'wallet-test-1'}).id,withdrawal.id);
+assert.equal(api.wallet('s1').withdrawals.length,1);
+assert.throws(()=>api.withdraw('s1',{amount:2000,lastFour:'1234',requestId:'wallet-test-1'}));
+storage.importData(JSON.stringify(storage.state()));
+assert.equal(api.wallet('s1').withdrawn,1000);
+assert.equal(api.wallet('s2').withdrawn,0);
+const remaining=api.wallet('s1').available;
+api.withdraw('s1',{amount:remaining,lastFour:'9999',requestId:'wallet-test-2'});
+assert.equal(api.wallet('s1').available,0);
+assert.throws(()=>api.withdraw('s1',{amount:1,lastFour:'9999',requestId:'wallet-test-3'}));
+console.log('PASS: wallet balances, bounded withdrawals, retry protection and JSON persistence.');

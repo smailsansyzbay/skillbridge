@@ -38,6 +38,15 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
   ${textarea('bio',term('О себе (необязательно)','Өзіңіз туралы (міндетті емес)'),'','maxlength="1000"')}
   ${actions(term('Создать и открыть профиль','Профильді жасап ашу'))}</form>`;break;
  }
+ case 'withdraw':{
+  const balance=window.SBData.wallet(uid);
+  title=term('Вывод на счёт','Шотқа шығару','Withdraw to account');
+  body=`<p class="hint">${term('Только макет. Укажите любые четыре вымышленные цифры счёта.','Тек макет. Шоттың ойдан алынған төрт санын енгізіңіз.','A mockup only. Enter any four fictional account digits.')}</p><div class="withdraw-available">${term('Доступно','Қолжетімді','Available')} <strong>${money(balance.available)}</strong></div><form data-form="withdraw" class="form-grid"><input type="hidden" name="requestId" value="${esc(m.requestId)}">${formField('amount',term('Сумма, ₸','Сома, ₸','Amount, ₸'),balance.available,'number','required min="1" max="'+balance.available+'" step="1"')}${formField('lastFour',term('Демо-счёт Freedom · последние 4 цифры','Freedom демо шоты · соңғы 4 сан','Freedom demo account · last 4 digits'),'','text','required inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="off"')}${actions(term('Продолжить','Жалғастыру','Continue'))}</form>`;break;
+ }
+ case 'withdraw-confirm':{
+  title=term('Подтвердить демо-вывод','Демо шығаруды растау','Confirm demo withdrawal');
+  body=`<div class="payment-preview freedom"><span class="payment-mark">F</span><h3>Freedom · •••• ${esc(m.lastFour)}</h3><strong class="payment-total">${money(m.amount)}</strong><p>${term('Это запись в демо-истории. Реального перевода на банковский счёт не будет.','Бұл демо тарихтағы жазба. Банк шотына нақты аударым жасалмайды.','This records a demo transaction. No money will be sent to a bank account.')}</p></div><form data-form="withdraw-confirm">${actions(term('Подтвердить демо-вывод','Демо шығаруды растау','Confirm demo withdrawal'))}</form>`;break;
+ }
  case 'order':{
   const custom=m.sid==='custom',srv=service(custom?'catalog':m.sid);if(!srv){return '';}title=term('Новое микро-задание','Жаңа шағын тапсырма');wide=true;
   body=`<div class="info"><strong>${custom?term('Свой заказ','Жеке тапсырыс'):esc(ui().loc(srv.title))}</strong> · ${custom?term('Ваш срок и цена · комиссия 15%','Сіздің мерзіміңіз бен бағаңыз · комиссия 15%'):money(srv.price)+' · '+term('срок 3 рабочих дня','мерзім 3 жұмыс күні')}</div>
@@ -153,6 +162,15 @@ async function submitForm(form){const fd=new FormData(form), type=form.dataset.f
   if(!window.SBStorage.save()){d().users.pop();throw Error(term('Не удалось сохранить профиль в браузере.','Профиль браузерде сақталмады.'));}
   choose(user.id);return;
  }
+ case 'withdraw':{
+  const amount=Number(val('amount')),lastFour=val('lastFour');
+  if(!Number.isSafeInteger(amount)||amount<=0||amount>window.SBData.wallet(uid).available||!/^\d{4}$/.test(lastFour))throw Error(term('Проверьте сумму и четыре цифры демо-счёта.','Сома мен демо шоттың төрт санын тексеріңіз.','Check the amount and four demo account digits.'));
+  open('withdraw-confirm',{amount,lastFour,requestId:val('requestId')});return;
+ }
+ case 'withdraw-confirm':{
+  const entry=window.SBData.withdraw(uid,state.modal);
+  state.modal=null;render();toast(term('Демо-вывод сохранён.','Демо шығару сақталды.','Demo withdrawal saved.')+' '+money(entry.amount));return;
+ }
  case 'create-order':{
   const file=await prepareFile(fd.get('source') instanceof File&&fd.get('source').size?fd.get('source'):null);
   const o=window.SBData.createOrder(uid,{serviceId:val('sid'),custom:val('custom')==='yes',price:val('price'),days:val('days'),title:val('title'),brief:val('brief'),notes:val('notes'),inputFile:file});state.modal=null;state.orderId=o.id;state.route='order-detail';render();success(term('Заказ создан. Следующий шаг — DEMO оплата.','Тапсырыс жасалды. Келесі қадам — DEMO төлем.'));return;
@@ -197,6 +215,7 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
   choose(admin.id);break;
  }
  case 'add-demo-user':open('new-demo-user',{role:el.dataset.role});break;
+ case 'open-withdraw':open('withdraw',{requestId:window.SBData.id('request')});break;
  case 'begin-demo':open('account',{role:el.dataset.role});break;
  case 'logout':state.uid=null;sessionStorage.removeItem('sb-current-user');navigate('landing');break;
  case 'switch-account':choose(el.dataset.uid);break;
