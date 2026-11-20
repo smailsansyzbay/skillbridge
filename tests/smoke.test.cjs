@@ -20,13 +20,13 @@ const context = {
 };
 context.window = context;
 vm.createContext(context);
-for (const filename of ['seed.js', 'storage.js', 'data.js']) {
+for (const filename of ['seed.js', 'catalog.js', 'storage.js', 'data.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../js', filename), 'utf8'), context, { filename });
 }
 const { SBStorage: storage, SBData: api, SBTestBank: bank } = context;
 storage.load();
 assert.equal(storage.state().settings.commissionRate, 0.15);
-assert.equal(storage.state().services.length, 3);
+assert.equal(storage.state().services.length, 31);
 assert.equal(api.priceFor({serviceId:'catalog'}), 20000);
 assert.equal(api.share({serviceId:'catalog'}), 17000);
 assert.equal(api.commission({serviceId:'catalog'}), 3000);
@@ -179,3 +179,35 @@ api.withdraw('s1',{amount:remaining,lastFour:'9999',requestId:'wallet-test-2'});
 assert.equal(api.wallet('s1').available,0);
 assert.throws(()=>api.withdraw('s1',{amount:1,lastFour:'9999',requestId:'wallet-test-3'}));
 console.log('PASS: wallet balances, bounded withdrawals, retry protection and JSON persistence.');
+
+// Every new department must support qualified assignment and full delivery.
+assert.equal(context.SBCatalog.departments.length,7);
+for (const department of context.SBCatalog.departments) {
+  const services=storage.state().services.filter(service=>service.skillGroup===department.id);
+  assert.equal(services.length,4);
+  const chosen=services[0],other=services[1];
+  assert.equal(api.qualification('s4',chosen.id),false);
+  const result=api.test('s4',chosen.id,bank[chosen.id].map(question=>question.correct));
+  assert.equal(result.passed,true);
+  assert.equal(api.qualification('s4',other.id),true);
+  const task=api.createOrder('b1',{serviceId:other.id,title:'Тест услуги '+department.id,brief:'Подготовить результат согласно подробному описанию и критериям приёмки.',briefDetails:{goal:'Проверить новый каталог',audience:'Малый бизнес',deliverables:'Редактируемый файл',materials:'Синтетические данные',acceptance:'Соответствие брифу'}});
+  api.pay('b1',task.id);
+  api.assign('a1',task.id,'s4');
+  api.start('s4',task.id);
+  api.submit('s4',task.id,{text:'Работа подготовлена согласно согласованным требованиям.'});
+  api.qa('a1',task.id,true,'Соответствует',other.criteria.ru.map(()=>true));
+  api.accept('b1',task.id);
+  api.release('a1',task.id);
+  assert.equal(task.status,'completed');
+  assert.equal(task.briefDetails.deliverables,'Редактируемый файл');
+}
+// Old JSON files gain new services without losing their existing content.
+const oldCatalog=JSON.parse(JSON.stringify(storage.state()));
+oldCatalog.services=oldCatalog.services.filter(service=>['catalog','excel','research'].includes(service.id));
+storage.importData(JSON.stringify(oldCatalog));
+assert.equal(storage.state().services.length,31);
+assert.equal(storage.state().orders.at(0).briefDetails.acceptance,'Соответствие брифу');
+storage.load();
+assert.equal(storage.state().services.length,31);
+assert.throws(()=>api.createOrder('b1',{serviceId:'content-plan',title:'Invalid brief details',brief:'A sufficiently long description of the expected work.',briefDetails:{goal:'x'.repeat(1501)}}));
+console.log('PASS: seven departments, 28 services, skill groups, complete workflows, structured briefs and legacy JSON enrichment.');

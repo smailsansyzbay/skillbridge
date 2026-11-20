@@ -17,14 +17,23 @@ function notifyAdmin(text){st().users.filter(x=>x.role==='admin').forEach(x=>not
 function workingDeadline(days){let dt=new Date(),n=0;while(n<days){dt.setDate(dt.getDate()+1);if(dt.getDay()!==0&&dt.getDay()!==6)n++;}return dt.toISOString();}
 function nextOrderId(){let n=Math.max(1002,...st().orders.map(o=>Number((o.id.match(/SB-(\d+)/)||[])[1])||0));return `SB-${n+1}`;}
 const visible=(o,uid)=>hasRole(uid,'admin')||o.businessId===uid||o.performerId===uid;
-function qualification(uid,sid){return st().skillTests.some(x=>x.userId===uid&&x.serviceId===sid&&x.passed);}
+function qualification(uid,sid){
+ const group=service(sid)?.skillGroup;
+ return st().skillTests.some(test=>test.userId===uid&&test.passed&&(test.serviceId===sid||(group&&service(test.serviceId)?.skillGroup===group)));
+}
 function mutate(f){const out=f();save();return out;}
 function createOrder(actor,input){return mutate(()=>{requireThat(hasRole(actor,'business'),'Only SME can create an order.');requireThat(service(input.serviceId),'Услуга не найдена.');const title=String(input.title||'').trim(),brief=String(input.brief||'').trim();requireThat(title.length>=5&&title.length<=130,'Название: 5–130 символов.');requireThat(brief.length>=25&&brief.length<=3500,'Опишите задание минимум 25 символами.');const custom=input.custom===true;
 const price=custom?Number(input.price):service(input.serviceId).price;
 const days=custom?Number(input.days):st().settings.targetWorkingDays;
 requireThat(Number.isSafeInteger(price)&&price>=1&&price<=10000000,'Цена: целое число от 1 до 10 000 000 ₸.');
 requireThat(Number.isInteger(days)&&days>=1&&days<=365,'Срок: от 1 до 365 рабочих дней.');
-const o={id:nextOrderId(),serviceId:input.serviceId,custom,price,targetWorkingDays:days,businessId:actor,performerId:null,title,brief,notes:String(input.notes||'').slice(0,2000),inputFile:input.inputFile||null,status:'awaiting_demo_payment',demoPayment:false,revisionCount:0,deadline:workingDeadline(days),createdAt:now(),updatedAt:now(),delivery:null,qa:null,review:null,demoPayout:false,dispute:null};st().orders.unshift(o);log(o,actor,'Created draft order');notifyAdmin(`Создан демо-заказ ${o.id}.`);return o;});}
+const briefDetails={};
+for(const key of ['goal','audience','deliverables','materials','acceptance']){
+ const value=String(input.briefDetails?.[key]||'').trim();
+ requireThat(value.length<=1500,'Поле брифа: максимум 1500 символов.');
+ if(value)briefDetails[key]=value;
+}
+const o={id:nextOrderId(),serviceId:input.serviceId,custom,price,targetWorkingDays:days,businessId:actor,performerId:null,title,brief,briefDetails,notes:String(input.notes||'').slice(0,2000),inputFile:input.inputFile||null,status:'awaiting_demo_payment',demoPayment:false,revisionCount:0,deadline:workingDeadline(days),createdAt:now(),updatedAt:now(),delivery:null,qa:null,review:null,demoPayout:false,dispute:null};st().orders.unshift(o);log(o,actor,'Created draft order');notifyAdmin(`Создан демо-заказ ${o.id}.`);return o;});}
 function pay(actor,oid,provider='freedom'){return mutate(()=>{const o=order(oid);requireThat(o.businessId===actor,'Only order owner can simulate payment.');requireThat(o.status==='awaiting_demo_payment'&&!o.demoPayment,'Payment already confirmed or invalid status.');requireThat(['freedom'].includes(provider),'Неизвестный способ демо-оплаты.');o.demoPaymentProvider=provider;o.demoPayment=true;o.status='matching';st().ledger.unshift({id:id('txn'),orderId:o.id,type:'demo_funded',amount:priceFor(o),createdAt:now(),demo:true});log(o,actor,'Demo payment confirmed');notifyAdmin(`Оплата DEMO по ${o.id} подтверждена. Назначьте исполнителя.`);return o;});}
 function cancel(actor,oid){return mutate(()=>{const o=order(oid);requireThat(o.businessId===actor||hasRole(actor,'admin'),'Insufficient permissions.');requireThat(o.status==='awaiting_demo_payment','Only unpaid orders can be cancelled by this action.');o.status='cancelled';log(o,actor,'Cancelled unpaid order');return o;});}
 function apply(actor,oid){return mutate(()=>{const o=order(oid);requireThat(hasRole(actor,'performer'),'Only performer can apply.');requireThat(o.status==='matching','Order is not accepting applications.');requireThat(qualification(actor,o.serviceId),'Сначала пройдите тест этой категории.');requireThat(!st().applications.some(a=>a.orderId===oid&&a.performerId===actor),'Вы уже откликнулись.');st().applications.unshift({id:id('app'),orderId:oid,performerId:actor,createdAt:now()});log(o,actor,'Performer applied');notifyAdmin(`${user(actor).name} откликнулся на ${o.id}.`);return o;});}

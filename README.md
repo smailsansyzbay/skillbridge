@@ -12,7 +12,17 @@ A subtle Administrator link at the bottom of the home page opens the local admin
 
 Existing local JSON records remain available, including profiles created in earlier versions. Login credentials are no longer used. Open index.html in a modern browser or serve the folder using a local static server.
 
-## Three standard services
+## Catalog departments
+
+The catalog contains seven departments and all 28 requested task types, plus the three existing services. Open a department, search its tasks, inspect a service’s deliverables and review checklist, and create an order. Custom Order remains available from every department.
+
+Departments cover marketing, finance and economics, IT and programming, management, design, HR and psychology, and writing/translation/journalism. New services use the current demonstration budget of 20 000 ₸ and three-working-day target. Custom orders retain editable budgets and timelines.
+
+New skills tests qualify a performer within the corresponding new department. Existing task qualifications retain their scope. Each service has four acceptance criteria for operator QA. The order brief includes a goal, audience, format/scope, source materials and customer acceptance requirements, visible to the assigned specialist and QA operator.
+
+Existing browser data and imported JSON files gain the new services without resetting users, orders or messages.
+
+## Original standard services
 
 | Service | Deliverable | Buyer price |
 | --- | --- | ---: |
@@ -74,6 +84,7 @@ The **Messages** section now contains a dedicated two-column inbox: a searchable
 index.html                 HTML entry point
 css/styles.css             Responsive UI and animation
 js/seed.js                 Fictional users, microtasks, skills tests
+js/catalog.js              Departments, task definitions and department tests
 js/storage.js              State, localStorage, JSON import/export
 js/data.js                 Order lifecycle and domain checks
 js/ui.js                   Page templates, dashboards, navigation

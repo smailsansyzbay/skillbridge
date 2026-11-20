@@ -311,3 +311,58 @@ body.workspace-active .modal h2{font-weight:500;font-size:28px}
 .topnav .history-button{border-color:#d4d9cc;color:#536d52}
 @media(max-width:1000px){.history-button span{display:none}.history-button{padding:8px}.header-left .history-controls{margin-right:4px}}
 @media(max-width:480px){.app-header .header-left{gap:7px}.app-header .header-left h3{display:none}.history-controls{gap:3px}.topnav .history-controls{display:none}}
+.catalog-breadcrumb{display:flex;gap:10px;align-items:center;font-size:12px;color:#7b9270;margin-bottom:16px}
+.catalog-breadcrumb .btn{padding:0;background:transparent;border:0;color:#6c865c}
+.catalog-breadcrumb strong{font-weight:400}
+.catalog-search{display:flex;align-items:center;gap:12px;background:#fcfefb;border:1px solid #d8e5d1;padding:10px 12px 10px 20px;border-radius:16px;margin:24px 0 30px;max-width:800px}
+.catalog-search label{color:#8da677;display:flex}
+.app-shell .catalog-search input{border:0;background:transparent;flex:1;min-width:0;padding:8px 0;font-size:14px}
+.department-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.department-card{display:flex;flex-direction:column;position:relative;text-align:left;padding:26px;border-radius:20px;background:#fcfefb;border:1px solid #d8e5d1;min-height:260px;color:#294833;transition:transform .2s,border-color .2s,box-shadow .2s}
+.department-card:hover{transform:translateY(-4px);border-color:#93bb76;box-shadow:0 12px 28px #244d2010}
+.department-card:focus-visible{outline:3px solid #9ac76e;outline-offset:3px}
+.department-card-icon{display:grid;place-items:center;width:50px;height:50px;border-radius:16px;background:#e5f1d8;color:#6b914b;margin-bottom:22px}
+.app-shell .department-card h2{font:500 21px/1.3 'Helvetica Neue',Arial,sans-serif;letter-spacing:-.025em;margin:0 0 12px}
+.department-card p{color:#839576;font-size:14px;line-height:1.6;margin:0 0 24px}
+.department-card>div{display:flex;justify-content:space-between;align-items:center;margin-top:auto;font-size:12px;color:#739354}
+.department-it .department-card-icon{background:#dfede9;color:#568c7f}
+.department-design .department-card-icon{background:#ecebd6;color:#8e9053}
+.department-hr .department-card-icon{background:#e1ede0;color:#739267}
+.department-writing .department-card-icon{background:#e7e8ef;color:#83869d}
+.department-management .department-card-icon{background:#e7efdb;color:#82995a}
+.department-finance .department-card-icon{background:#e1f1df;color:#6e9962}
+.department-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 30px}
+.department-tabs button{border:1px solid #d6e2cd;border-radius:30px;background:#f7fbf2;color:#74925c;padding:10px 15px;font-size:12px}
+.department-tabs button.selected{background:#234f3c;color:#e3f9cd;border-color:#234f3c}
+.catalog-results-head{display:flex;justify-content:space-between;align-items:center;margin:0 0 20px;color:#849a73}
+.catalog-results-head h3{font-size:20px;font-weight:500;color:#34523c;margin:0}
+.catalog-results-head>span{font-size:12px}
+.catalog-task-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.catalog-task-card{background:#fcfefb;border:1px solid #dbe6d4;border-radius:18px;padding:25px;display:flex;flex-direction:column}
+.catalog-task-card .feature-icon{width:42px;height:42px;margin:0 0 20px}
+.app-shell .catalog-task-card h3{font-size:19px;line-height:1.4;font-weight:500;letter-spacing:-.02em;margin:0 0 12px}
+.catalog-task-card p{font-size:14px;line-height:1.8;color:#819575;margin:0 0 25px}
+.catalog-task-footer{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-top:auto;padding-top:18px;border-top:1px solid #e5eddc}
+.catalog-task-footer>span{font-size:17px;font-weight:500;color:#527941}
+.catalog-task-footer .btn{font-size:12px;padding:9px 12px}
+.catalog-custom-strip{display:flex;align-items:center;justify-content:space-between;gap:24px;background:#e3efd5;border:1px solid #d0e4bc;padding:28px;border-radius:18px;margin-top:28px}
+.catalog-custom-strip h3{margin:0 0 8px;font-size:20px;font-weight:500}
+.catalog-custom-strip p{margin:0;font-size:14px;color:#7f946c;line-height:1.7}
+.catalog-custom-strip .btn{flex-shrink:0}
+.service-preview-intro{font-size:19px;line-height:1.7;color:#6f8661;margin:22px 0 28px}
+.service-preview h3{font-size:17px;font-weight:500;margin-top:26px}
+.service-preview p{line-height:1.8}
+.service-preview-footer{display:flex;align-items:center;gap:20px;padding:20px 0;border-top:1px solid #dfe9d6;margin-top:28px}
+.service-preview-footer strong{font-size:24px;font-weight:500;color:#527941}
+.service-preview-footer>span{font-size:12px;color:#91a27f}
+.order-form-intro{padding:20px;background:#ecf5e1;border-radius:16px;margin-bottom:6px}
+.order-form-intro h3{font-size:22px;font-weight:500;margin:15px 0 10px}
+.order-form-intro p{margin:0;line-height:1.8;color:#809570;font-size:14px}
+.brief-section-heading{padding-top:24px;border-top:1px solid #dce7d2;margin-top:10px}
+.brief-section-heading h3{font-size:19px;font-weight:500;margin:0 0 8px}
+.brief-section-heading p{font-size:13px;line-height:1.7;color:#8b9d7d}
+.order-brief-details{display:grid;gap:18px;margin:24px 0;padding:22px;background:#f1f7eb;border-radius:14px}
+.order-brief-details h4{font-size:13px;font-weight:500;margin:0 0 7px;color:#789461}
+.order-brief-details p{font-size:14px;line-height:1.8;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:1100px){.department-grid,.catalog-task-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.department-grid,.catalog-task-grid{grid-template-columns:1fr}.department-card{min-height:210px;padding:24px}.department-card-icon{margin-bottom:18px}.catalog-custom-strip{display:block;padding:24px}.catalog-custom-strip .btn{margin-top:18px}.catalog-search{padding:8px 10px;gap:8px}.catalog-search .btn{font-size:12px;padding:10px}.catalog-search input{font-size:13px}.catalog-breadcrumb strong{overflow-wrap:anywhere}.service-preview-footer{align-items:flex-start;flex-direction:column;gap:8px}}

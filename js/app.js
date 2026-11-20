@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const $=s=>document.querySelector(s);
-const state={uid:null,route:'landing',orderId:null,mobile:false,filters:{query:'',status:'',category:''},modal:null,inbox:{threadId:null,query:'',filter:'all',mobileChat:false,drafts:{}}};
+const state={uid:null,route:'landing',catalogDepartment:null,orderId:null,mobile:false,filters:{query:'',status:'',category:''},modal:null,inbox:{threadId:null,query:'',filter:'all',mobileChat:false,drafts:{}}};
 const d=()=>window.SBStorage.state();
 const ui=()=>window.SBUI;
 const str=(s)=>String(s??'');
@@ -47,13 +47,25 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
   title=term('Подтвердить демо-вывод','Демо шығаруды растау','Confirm demo withdrawal');
   body=`<div class="payment-preview freedom"><span class="payment-mark">F</span><h3>Freedom · •••• ${esc(m.lastFour)}</h3><strong class="payment-total">${money(m.amount)}</strong><p>${term('Это запись в демо-истории. Реального перевода на банковский счёт не будет.','Бұл демо тарихтағы жазба. Банк шотына нақты аударым жасалмайды.','This records a demo transaction. No money will be sent to a bank account.')}</p></div><form data-form="withdraw-confirm">${actions(term('Подтвердить демо-вывод','Демо шығаруды растау','Confirm demo withdrawal'))}</form>`;break;
  }
+ case 'service-info':{
+  const srv=service(m.sid);if(!srv)return '';
+  title=ui().loc(srv.title);wide=true;
+  const department=window.SBCatalog.departments.find(item=>item.id===srv.department);
+  body=`<div class="service-preview"><span class="tag neutral">${esc(ui().loc(department?.title))}</span><p class="service-preview-intro">${esc(ui().loc(srv.detail))}</p><h3>${term('Что вы получите','Не аласыз','What you will receive')}</h3><p>${esc(ui().loc(srv.deliverable))}</p><h3>${term('Как принимается работа','Жұмыс қалай қабылданады','How the work is reviewed')}</h3><ul class="check-list">${ui().loc(srv.criteria).map(item=>`<li>${ui().ico('check')}<span>${esc(item)}</span></li>`).join('')}</ul><div class="service-preview-footer"><strong>${money(srv.price)}</strong><span>${term('Демонстрационный бюджет · срок уточняется в брифе','Демо бюджет · мерзім брифте нақтыланады','Demo budget · confirm the timeline in the brief')}</span></div><button class="btn btn-primary" data-action="start-order" data-sid="${esc(srv.id)}">${term('Составить заказ','Тапсырыс құрастыру','Prepare an order')} →</button></div>`;break;
+ }
  case 'order':{
-  const custom=m.sid==='custom',srv=service(custom?'catalog':m.sid);if(!srv){return '';}title=term('Новое микро-задание','Жаңа шағын тапсырма');wide=true;
+  const custom=m.sid==='custom',srv=service(custom?(d().services.find(item=>item.department===state.catalogDepartment)?.id||'catalog'):m.sid);if(!srv){return '';}title=term('Новое микро-задание','Жаңа шағын тапсырма');wide=true;
   body=`<div class="info"><strong>${custom?term('Свой заказ','Жеке тапсырыс'):esc(ui().loc(srv.title))}</strong> · ${custom?term('Ваш срок и цена · комиссия 15%','Сіздің мерзіміңіз бен бағаңыз · комиссия 15%'):money(srv.price)+' · '+term('срок 3 рабочих дня','мерзім 3 жұмыс күні')}</div>
-  <form data-form="create-order" class="form-grid"><input type="hidden" name="custom" value="${custom?'yes':'no'}">${custom?`<div class="field span2"><label>${term('Необходимая компетенция','Қажетті дағды')}</label><select name="sid">${d().services.map(s=>`<option value="${s.id}">${esc(ui().loc(s.title))}</option>`).join('')}</select><small class="hint">${term('Исполнитель подбирается по тесту выбранной категории. Результат проверяется по её критериям QA.','Орындаушы таңдалған санат тесті бойынша іріктеледі. Нәтиже сол санаттың QA талаптарымен тексеріледі.')}</small></div>`: `<input type="hidden" name="sid" value="${esc(srv.id)}">`}
-  ${formField('title',term('Название задания','Тапсырма атауы'),custom?'':srv.id==='catalog'?term('Подготовить карточки новых товаров','Жаңа тауар карточкаларын дайындау'):srv.id==='excel'?term('Привести данные в порядок','Деректерді реттеу'):term('Сравнить пять конкурентов','Бес бәсекелесті салыстыру'),'text','required minlength="5" maxlength="130"')}
+  <form data-form="create-order" class="form-grid"><div class="order-form-intro span2"><span class="tag neutral">${term('Бриф заказа','Тапсырыс брифі','Order brief')}</span><h3>${term('Расскажите, какой результат вам нужен','Қандай нәтиже қажет екенін айтыңыз','Tell us what a good result looks like')}</h3><p>${custom?term('Определите задачу, бюджет и срок. Выберите услугу, которая ближе всего к нужной компетенции.','Тапсырма, бюджет пен мерзімді белгілеңіз. Қажетті дағдыға жақын қызметті таңдаңыз.','Set the task, budget and timeline. Choose the closest competency category.'):esc(ui().loc(srv.deliverable))}</p></div><input type="hidden" name="custom" value="${custom?'yes':'no'}">${custom?`<div class="field span2"><label>${term('Необходимая компетенция','Қажетті дағды')}</label><select name="sid">${d().services.map(s=>`<option value="${s.id}" ${s.id===srv.id?'selected':''}>${esc(ui().loc(s.title))}</option>`).join('')}</select><small class="hint">${term('Исполнитель подбирается по тесту выбранной категории. Результат проверяется по её критериям QA.','Орындаушы таңдалған санат тесті бойынша іріктеледі. Нәтиже сол санаттың QA талаптарымен тексеріледі.')}</small></div>`: `<input type="hidden" name="sid" value="${esc(srv.id)}">`}
+  ${formField('title',term('Название задания','Тапсырма атауы'),custom?'':ui().loc(srv.title),'text','required minlength="5" maxlength="130"')}
   ${custom?formField('days',term('Срок в рабочих днях','Жұмыс күндерінің саны'),'3','number','required min="1" max="365" step="1"')+formField('price',term('Цена заказа, ₸','Тапсырыс бағасы, ₸'),'20000','number','required min="1" max="10000000" step="1"'):formField('deadline',term('Срок выполнения','Орындалу мерзімі'),term('3 рабочих дня','3 жұмыс күні'),'text','disabled')}
   ${textarea('brief',term('Подробное техническое задание','Техникалық тапсырманың толық сипаттамасы'),'', 'required minlength="25" maxlength="3500" placeholder="'+esc(term('Что нужно получить? Укажите исходные данные, состав результата и критерии приемки.','Не алу керек? Бастапқы ақпарат, нәтиже және қабылдау шарттары.'))+'"')}
+  <div class="brief-section-heading span2"><h3>${term('Детали, которые помогут исполнителю','Орындаушыға көмектесетін мәліметтер','Details that help your specialist')}</h3><p>${term('Заполните то, что уже знаете. Остальное можно уточнить в чате заказа.','Білетін мәліметтерді толтырыңыз. Қалғанын тапсырыс чатында нақтылауға болады.','Share what you already know. Clarify the rest in the order conversation.')}</p></div>
+  ${textarea('goal',term('Цель и контекст','Мақсат пен контекст','Goal and context'),'','maxlength="1500" placeholder="'+esc(term('Какую задачу бизнеса решаем? Что должно измениться после выполнения?','Қандай бизнес мәселесін шешеміз? Жұмыстан кейін не өзгеруі керек?','What business problem are we solving? What should change?'))+'"')}
+  ${formField('audience',term('Для кого делаем','Кімге арналған','Who is this for?'),'','text','maxlength="1500" placeholder="'+esc(term('Аудитория, рынок, язык, регион','Аудитория, нарық, тіл, аймақ','Audience, market, language, region'))+'"')}
+  ${formField('deliverables',term('Формат и объём результата','Нәтиженің форматы мен көлемі','Output format and scope'),'','text','maxlength="1500" placeholder="'+esc(term('Например, 10 слайдов, таблица XLSX или 5 текстов','Мысалы, 10 слайд, XLSX кестесі немесе 5 мәтін','For example, 10 slides, an XLSX spreadsheet or 5 texts'))+'"')}
+  ${textarea('materials',term('Материалы и ориентиры','Материалдар мен мысалдар','Materials and references'),'','maxlength="1500" placeholder="'+esc(term('Ссылки, примеры, брендбук, исходные данные. Не передавайте пароли.','Сілтемелер, мысалдар, бренд нұсқаулығы, бастапқы деректер. Құпиясөз жібермеңіз.','Links, examples, brand guidelines and source data. Do not share passwords.'))+'"')}
+  ${textarea('acceptance',term('Критерии готовности','Дайындық өлшемдері','What does done look like?'),'','maxlength="1500" placeholder="'+esc(term('Что обязательно должно быть в результате? Как вы будете его проверять?','Нәтижеде не міндетті болуы керек? Оны қалай тексересіз?','What must be included? How will you check the result?'))+'"')}
   ${textarea('notes',term('Дополнительные условия','Қосымша шарттар'),'', 'maxlength="2000"')}
   <div class="field span2"><label>${term('Файл с исходными данными (необязательно, до 128 KB для текстовых файлов)','Бастапқы файл (міндетті емес)')}</label><input type="file" name="source" accept=".txt,.csv,.json,.md,.tsv,.xlsx,.pdf"><small class="hint">${term('Только синтетические данные. Для бинарных файлов сохраняются только метаданные.','Тек демо деректер. Кейбір файлдардың тек атауы сақталады.')}</small></div>
   <div class="span2">${warn('<strong>DEMO ONLY.</strong> '+term('Оплата на следующем шаге — имитация; банковские карты не требуются.','Келесі төлем — имитация; карта қажет емес.'))}</div>${actions(term('Создать заказ','Тапсырыс жасау'))}</form>`;break;
@@ -88,7 +100,7 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  case 'qa':{
   const o=getOrder(m.oid),srv=service(o.serviceId);title=term('Проверка качества QA','Сапаны тексеру QA');wide=true;
   body=`<div class="info"><strong>${esc(o.id)}</strong> · ${esc(o.title)}</div><div class="surface" style="margin-top:15px"><h3>${term('Результат исполнителя','Орындаушының нәтижесі')}</h3><p style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(o.delivery?.text||'')}</p></div>
- <form data-form="qa"><input type="hidden" name="oid" value="${esc(o.id)}"><p><strong>${term('Проверка требований','Талаптарды тексеру')}</strong></p>${(ui().loc(srv.criteria)).map((v,i)=>`<label class="check-row"><input type="checkbox" name="check${i}" value="yes"> ${esc(v)}</label>`).join('')}
+ ${ui().briefDetails(o)}<form data-form="qa"><input type="hidden" name="oid" value="${esc(o.id)}"><p><strong>${term('Проверка требований','Талаптарды тексеру')}</strong></p>${(ui().loc(srv.criteria)).map((v,i)=>`<label class="check-row"><input type="checkbox" name="check${i}" value="yes"> ${esc(v)}</label>`).join('')}
  <div class="field" style="margin-top:15px"><label>${term('Решение','Шешім')}</label><select name="verdict"><option value="pass">${term('Одобрить и отправить клиенту','Қабылдап клиентке жіберу')}</option><option value="reject">${term('Вернуть на исправление','Түзетуге қайтару')}</option></select></div><div class="field" style="margin-top:14px"><label>${term('Комментарий QA','QA пікірі')}</label><textarea name="notes" rows="3" maxlength="1200" placeholder="${term('Причина отказа: не менее 12 символов','Бас тарту себебі: 12 таңба')}"></textarea></div>${actions(term('Сохранить решение QA','QA шешімін сақтау'))}</form>`;break;
  }
  case 'revision':{
@@ -111,7 +123,7 @@ function scrollInbox(){const feed=$('#inbox-chat-feed');if(feed)feed.scrollTop=f
 function show(){const root=$('#app');if(!root)return;document.documentElement.lang=({ru:'ru',kz:'kk',en:'en'})[d().settings.language];document.title=term('SkillBridge — Микро-задания для бизнеса и исполнителей','SkillBridge — Бизнес пен орындаушыларға арналған шағын тапсырмалар');let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():'');document.body.classList.toggle('modal-active',!!state.modal);document.body.classList.toggle('workspace-active',state.route!=='landing'&&!!state.uid);if(state.route==='messages')requestAnimationFrame(scrollInbox);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
 const navigation={session:Date.now().toString(36)+Math.random().toString(36).slice(2),entries:[],index:-1,restoring:false};
 function navigationSnapshot(){
- return {uid:state.uid,route:state.route,orderId:state.route==='order-detail'?state.orderId:null};
+ return {uid:state.uid,route:state.route,department:state.route==='catalog'?state.catalogDepartment:null,orderId:state.route==='order-detail'?state.orderId:null};
 }
 function rememberNavigation(){
  if(navigation.restoring)return;
@@ -129,17 +141,17 @@ function restoreNavigation(event){
  }
  navigation.index=saved.index;
  const entry=navigation.entries[navigation.index];
- state.uid=window.SBData.user(entry.uid)?entry.uid:null;
+ state.uid=window.SBData.user(entry.uid)?entry.uid:null;state.catalogDepartment=entry.department||null;
  state.modal=null;state.mobile=false;state.inbox.mobileChat=false;
  navigation.restoring=true;
  try{
   let route=state.uid?entry.route:'landing';
   if(route==='order-detail'&&!d().orders.some(order=>order.id===entry.orderId))route='dashboard';
-  navigate(route,entry.orderId);
+  navigate(route,entry.orderId,entry.department||null);
  }finally{navigation.restoring=false;}
 }
 function render(keepScroll=false){let scroll=window.scrollY;rememberNavigation();show();if(!keepScroll)window.scrollTo(0,0);else window.scrollTo(0,scroll);}
-function navigate(route,oid=null){state.modal=null;if(route==='landing'){state.route='landing';state.orderId=null;state.mobile=false;render();return;}
+function navigate(route,oid=null,department=null){if(route==='catalog')state.catalogDepartment=department;state.modal=null;if(route==='landing'){state.route='landing';state.orderId=null;state.mobile=false;render();return;}
  if(!getUser()){state.modal={type:'account'};state.route='landing';render();return;}
  const role=getUser().role;
  const allowed={business:['dashboard','catalog','orders','messages','notifications','profile','order-detail','faq','about'],performer:['dashboard','opportunities','mytasks','screening','portfolio','earnings','messages','notifications','profile','order-detail','faq','about'],admin:['dashboard','admin-orders','admin-performers','qa','disputes','finance','messages','notifications','profile','order-detail','faq','about','data']};
@@ -202,7 +214,7 @@ async function submitForm(form){const fd=new FormData(form), type=form.dataset.f
  }
  case 'create-order':{
   const file=await prepareFile(fd.get('source') instanceof File&&fd.get('source').size?fd.get('source'):null);
-  const o=window.SBData.createOrder(uid,{serviceId:val('sid'),custom:val('custom')==='yes',price:val('price'),days:val('days'),title:val('title'),brief:val('brief'),notes:val('notes'),inputFile:file});state.modal=null;state.orderId=o.id;state.route='order-detail';render();success(term('Заказ создан. Следующий шаг — DEMO оплата.','Тапсырыс жасалды. Келесі қадам — DEMO төлем.'));return;
+  const o=window.SBData.createOrder(uid,{serviceId:val('sid'),custom:val('custom')==='yes',price:val('price'),days:val('days'),title:val('title'),brief:val('brief'),briefDetails:Object.fromEntries(['goal','audience','deliverables','materials','acceptance'].map(key=>[key,val(key)])),notes:val('notes'),inputFile:file});state.modal=null;state.orderId=o.id;state.route='order-detail';render();success(term('Заказ создан. Следующий шаг — DEMO оплата.','Тапсырыс жасалды. Келесі қадам — DEMO төлем.'));return;
  }
  case 'pay':open('payment-preview',{oid:val('oid'),provider:val('provider')});return;
  case 'confirm-demo-payment':window.SBData.pay(uid,val('oid'),val('provider'));break;
@@ -246,6 +258,8 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
   choose(admin.id);break;
  }
  case 'add-demo-user':open('new-demo-user',{role:el.dataset.role});break;
+ case 'open-department':navigate('catalog',null,el.dataset.department);break;
+ case 'service-info':open('service-info',{sid});break;
  case 'open-withdraw':open('withdraw',{requestId:window.SBData.id('request')});break;
  case 'begin-demo':open('account',{role:el.dataset.role});break;
  case 'logout':state.uid=null;sessionStorage.removeItem('sb-current-user');navigate('landing');break;
@@ -280,7 +294,7 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
  }
  }catch(e){toast(e.message||String(e),true);}
 }
-const SBApp={canGoBack:()=>navigation.index>0,canGoForward:()=>navigation.index<navigation.entries.length-1,uid:()=>state.uid,route:()=>state.route,orderId:()=>state.orderId,mobileOpen:()=>state.mobile,filters:()=>state.filters,inboxState:()=>state.inbox,render,navigate,choose,open,reset:()=>window.SBStorage.reset()};
+const SBApp={catalogDepartment:()=>state.catalogDepartment,canGoBack:()=>navigation.index>0,canGoForward:()=>navigation.index<navigation.entries.length-1,uid:()=>state.uid,route:()=>state.route,orderId:()=>state.orderId,mobileOpen:()=>state.mobile,filters:()=>state.filters,inboxState:()=>state.inbox,render,navigate,choose,open,reset:()=>window.SBStorage.reset()};
 window.SBApp=SBApp;
 function initialize(){window.addEventListener('popstate',restoreNavigation);window.SBStorage.load();state.route='landing';render();
  document.addEventListener('click',e=>{const act=e.target.closest('[data-action]');if(act){e.preventDefault();clicked(act);return;}if(e.target.matches('[data-modal-backdrop]'))close();});
