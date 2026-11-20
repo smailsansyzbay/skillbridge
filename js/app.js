@@ -172,6 +172,11 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
  case 'menu':state.mobile=!state.mobile;render(true);break;
  case 'language':window.SBData.changeLanguage(isKz()?'ru':'kz');render(true);toast(term('Язык переключен.','Тіл ауыстырылды.'));break;
  case 'account-picker':open('account');break;
+ case 'admin-entry':{
+  const admin=d().users.find(user=>user.role==='admin');
+  if(!admin){toast(term('В данных нет администратора.','Деректерде әкімші жоқ.'),true);break;}
+  authenticatedUid=admin.id;choose(admin.id);break;
+ }
  case 'begin-auth':open('auth',{role:el.dataset.role});break;
  case 'auth-mode':open('auth',{role:state.modal.role,register:el.dataset.mode==='register'});break;
  case 'logout':authenticatedUid=null;state.uid=null;sessionStorage.removeItem('sb-current-user');navigate('landing');break;

@@ -10,7 +10,7 @@ The public home page offers Performer and Customer entry. Each opens registratio
 
 Sign out from the workspace before entering another account. Reloading requires signing in again. Seed profiles have no login credentials. Existing browser profiles without credentials remain in the dataset but cannot be selected as public login accounts.
 
-Public administrator entry and account switching are disabled. Administrative workflow logic remains available for development and automated tests. Enabling a real operator portal requires backend authentication, server-side authorization and storage. A concealed URL or browser password cannot protect browser-owned JSON from its owner. This static demo does not provide production authentication or protected administrative data.
+A subtle Administrator link at the bottom of the home page opens the local administrative demo workspace. It is publicly accessible and has no password. This entry is intended for fictional demonstration data. Production operator access requires backend authentication, server-side authorization and storage.
 
 Open index.html in a modern browser, or serve the folder using a local static server. Web Crypto requires a secure context such as HTTPS or localhost.
 
