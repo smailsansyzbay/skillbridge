@@ -152,101 +152,119 @@ body{background:radial-gradient(ellipse at 5% 10%,#e4dcf8 0,transparent 45%),rad
 @media(max-width:1000px){.hero-grid{grid-template-columns:1fr 1fr;gap:30px;padding:55px 0 70px}.work-composition{padding:10px 0 65px;min-height:410px}.composition-sheet{padding:22px}.sheet-heading{font-size:28px}.composition-note{right:0;max-width:250px;padding:18px}.composition-note p{font-size:18px}.editorial-how-grid{gap:50px}.faq-editorial{gap:40px}.hero-left h1{font-size:49px}.hero-desc{font-size:16px}.role-entry-grid{grid-template-columns:1fr}.role-entry-card,.role-entry-card:nth-child(2){min-height:82px;padding:15px 40px 15px 52px}.role-entry-icon{position:absolute;left:16px;top:24px}.role-entry-card strong{font-size:16px}.role-entry-card>span:not(.role-entry-icon):not(.role-entry-arrow){font-size:12px}}
 @media(max-width:700px){.hero-grid{grid-template-columns:1fr;gap:40px;padding:40px 0 55px}.hero-left h1{font-size:clamp(43px,8vw,60px)}.hero-desc{font-size:17px}.role-entry{margin-top:28px}.work-composition{max-width:390px;width:100%;justify-self:center;min-height:390px;margin-top:6px}.composition-orbit{inset:0 -10px}.composition-sheet{margin:0 12px;padding:25px}.composition-note{right:0;bottom:0}.landing-editorial .section{padding:58px 0}.editorial-section-head,.editorial-how-grid,.faq-editorial{display:block}.editorial-section-head p{margin-top:20px}.landing-service-grid{grid-template-columns:1fr}.landing-service{padding:24px 20px;gap:15px}.landing-service h3{font-size:20px}.editorial-steps{margin-top:35px}.faq-editorial .faq{margin-top:25px}.landing-faq .faq summary,.content .faq summary{font-size:19px}.landing-faq .faq details p,.content .faq details p{font-size:16px}.landing-editorial .landing-cta{padding:30px;display:block}.landing-editorial .landing-cta h2{font-size:34px}.landing-editorial .landing-cta .btn{margin-top:16px}.topnav .inner{min-height:78px}.topnav .lang-switch{color:#233c36}.landing-editorial .hero-grid{width:calc(100% - 40px)}}
 .landing-editorial .landing-hero{padding:0;color:#233c36}.work-composition{color:#233c36}.composition-sheet strong,.sheet-brand,.sheet-heading,.sheet-icon{color:#233c36}
-/* Warm neutral workspaces, scoped away from the public home page. */
-body.workspace-active{--navy:#302e2c;--navy2:#413c37;--teal:#a34e38;--teal2:#813c2b;--ink:#343230;--muted:#7d776f;--bg:#f3f0eb;--soft:#ece6df;--line:#e3ddd5;--shadow:0 4px 22px #493c2d05;background:#f3f0eb;color:#343230;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;letter-spacing:0}
-.app-shell{background:#f3f0eb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#343230}
-.app-shell h1,.app-shell h2{font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-.035em}
+/* Brand-aligned green workspace. */
+body.workspace-active{--navy:#153e33;--navy2:#245143;--teal:#277657;--teal2:#1a5940;--ink:#223f34;--muted:#6b8174;--bg:#edf4ee;--soft:#e3eee3;--line:#dce7dc;--shadow:0 4px 22px #173e2505;background:#edf4ee;color:#223f34;font-family:'Helvetica Neue',Arial,'Segoe UI',sans-serif;font-size:15px;letter-spacing:0}
+.app-shell{background:#edf4ee;font-family:'Helvetica Neue',Arial,'Segoe UI',sans-serif;color:#223f34}
+.app-shell h1,.app-shell h2{font-family:'Helvetica Neue',Arial,'Segoe UI',sans-serif;font-weight:400;letter-spacing:-.035em}
 .app-shell h3,.app-shell h4{font-family:inherit;font-weight:600;letter-spacing:-.015em}
 .app-shell button,.app-shell input,.app-shell select,.app-shell textarea{font-family:inherit}
 .app-shell .page-top h1,.app-shell .inbox-page-top h1{font-size:36px;line-height:1.2}
-.app-shell .page-top p,.app-shell .inbox-page-top p{font-size:14px;line-height:1.7;color:#7d776f}
+.app-shell .page-top p,.app-shell .inbox-page-top p{font-size:14px;line-height:1.7;color:#6b8174}
 .app-shell .eyebrow{color:#9a7861;font-weight:500;letter-spacing:.1em;font-size:10px}
-.app-shell .sidebar{background:#302e2c;color:#ded7ce;border-right:1px solid #49423b}
-.app-shell .sidebar .brand{font-family:Georgia,serif;font-weight:400;font-size:25px;letter-spacing:-.04em}
-.app-shell .side-meta{color:#a79e92;font-size:10px;font-weight:500;line-height:1.7}
-.app-shell .nav-item{color:#c3bcb2;font-size:14px;font-weight:400;padding:12px 14px;border-radius:8px}
-.app-shell .nav-item:hover{background:#403b35;color:#fffaf3}
-.app-shell .nav-item.active{background:#ede5da;color:#433c32;font-weight:600}
-.app-shell .nav-item .nav-count{background:#6b5546;color:#fff6ec}
-.app-shell .side-user .avatar{background:#645548;color:#f7eee1}
-.app-shell .app-header{background:#faf8f4ed;border-color:#e3ddd5}
+.app-shell .sidebar{background:#153e33;color:#d6e8d8;border-right:1px solid #315b49}
+.app-shell .sidebar .brand{font-family:'Helvetica Neue',Arial,'Segoe UI',sans-serif;font-weight:400;font-size:25px;letter-spacing:-.04em}
+.app-shell .side-meta{color:#94b49f;font-size:10px;font-weight:500;line-height:1.7}
+.app-shell .nav-item{color:#b7d1bf;font-size:14px;font-weight:400;padding:12px 14px;border-radius:8px}
+.app-shell .nav-item:hover{background:#245342;color:#f5fff3}
+.app-shell .nav-item.active{background:#c7f391;color:#21472d;font-weight:600}
+.app-shell .nav-item .nav-count{background:#54865d;color:#efffe8}
+.app-shell .side-user .avatar{background:#407151;color:#eaf8dc}
+.app-shell .app-header{background:#f9fcf8ed;border-color:#dce7dc}
 .app-shell .app-header h3{font-size:16px;font-weight:500}
-.app-shell .demo-banner{background:#ece7df;border-color:#e0d8cc;color:#827666;font-size:11px}
-.app-shell .demo-banner button{background:#f9f6f0;border-color:#d9d0c4;color:#63584a;font-weight:500}
-.app-shell .surface,.app-shell .stat,.app-shell .service-card{background:#fffcf8;border-color:#e3ddd5;box-shadow:0 4px 22px #493c2d04;border-radius:14px}
+.app-shell .demo-banner{background:#e5eee5;border-color:#d7e4d5;color:#70846b;font-size:11px}
+.app-shell .demo-banner button{background:#f7fbf3;border-color:#ccdcca;color:#587050;font-weight:500}
+.app-shell .surface,.app-shell .stat,.app-shell .service-card{background:#fcfefb;border-color:#dce7dc;box-shadow:0 4px 22px #20452b04;border-radius:14px}
 .app-shell .surface{padding:26px}
-.app-shell .stat .value{font-family:Georgia,serif;font-weight:400;font-size:34px;letter-spacing:-.035em;color:#443c34}
-.app-shell .stat .topline{color:#8a8074;font-size:13px}.app-shell .stat .bottomline{font-size:12px;color:#8a8074}
+.app-shell .stat .value{font-family:'Helvetica Neue',Arial,'Segoe UI',sans-serif;font-weight:400;font-size:34px;letter-spacing:-.035em;color:#254b37}
+.app-shell .stat .topline{color:#778970;font-size:13px}.app-shell .stat .bottomline{font-size:12px;color:#778970}
 .app-shell .btn{border-radius:9px;font-size:13px;font-weight:500;letter-spacing:0}
-.app-shell .btn-primary,body.workspace-active .modal .btn-primary{background:#a34e38;box-shadow:none;color:#fffaf5}
-.app-shell .btn-primary:hover:not(:disabled),body.workspace-active .modal .btn-primary:hover:not(:disabled){background:#813c2b;box-shadow:0 4px 14px #a34e3820}
-.app-shell .btn-dark{background:#494039}.app-shell .btn-dark:hover{background:#302e2c}
-.app-shell .btn-soft{background:#f0e5da;color:#8c5138}
-.app-shell .btn-line{border-color:#d9d1c7;color:#64594d;background:transparent}
-.app-shell .btn-line:hover{background:#f1ebe3}
-.app-shell .service-image{background:#f1e7dc;color:#8e6443}
-.app-shell .service-card:nth-child(2) .service-image{background:#ece7ef;color:#7a6588}
-.app-shell .service-card:nth-child(3) .service-image{background:#eee7d2;color:#8d7747}
-.app-shell .custom-order-card{background:linear-gradient(130deg,#f4e7db,#f7eee5);border-color:#e2ccba}
-.app-shell .custom-order-card .service-image{background:#ead1bd;color:#8b593b}
-.app-shell .service-price{color:#5b4638}
-.app-shell .tag{background:#ece8dd;color:#76694b;font-weight:500}
-.app-shell .tag.neutral{background:#ece8e3;color:#746c63}.app-shell .tag.blue{background:#e7e7ef;color:#6d6b8a}.app-shell .tag.demo{background:#f3e8d7;color:#93703b}.app-shell .tag.danger{background:#f5e2df;color:#a45e53}
-.app-shell .feature-icon,.app-shell .avatar{background:#eee3d6;color:#8b6645}
-.app-shell .order-row{border-color:#e8e0d5}.app-shell .order-main h4{font-size:15px;font-weight:500}
-.app-shell .order-price{font-weight:500;color:#665345}.app-shell .order-id{color:#9a8a78}
-.app-shell input,.app-shell select,.app-shell textarea,body.workspace-active .modal input,body.workspace-active .modal select,body.workspace-active .modal textarea{border-color:#ddd4c8;border-radius:9px;color:#413c36;background:#fffdf9;font-size:14px;font-weight:400}
-.app-shell .field label,body.workspace-active .modal .field label{font-size:13px;font-weight:500;color:#6b5e50}
-.app-shell .btn:focus-visible,.app-shell .nav-item:focus-visible,.app-shell input:focus-visible,.app-shell textarea:focus-visible,.app-shell select:focus-visible{outline-color:#ca9878}
-.app-shell .progress-bar{background:#be8560}.app-shell .progress-rail{background:#eae1d6}
-.app-shell .timeline-row{border-color:#dfd2c0}.app-shell .timeline-row:before{background:#bd8967}
-.app-shell .info{background:#efe9e1;color:#7c6652;border-color:#dfd1c0}
-.app-shell .warn{background:#f7efdf;color:#8e7547;border-color:#e7d8b8}
-.app-shell .inbox-layout{background:#fffcf8;border-color:#e0d6cb;box-shadow:0 12px 40px #55412c07;border-radius:16px}
-.app-shell .inbox-conversations{background:#f5f1eb;border-color:#e6ddd1}
-.app-shell .inbox-list-top,.app-shell .inbox-conversation-head,.app-shell .inbox-compose{background:#fffcf8;border-color:#e6ddd1}
+.app-shell .btn-primary,body.workspace-active .modal .btn-primary{background:#277657;box-shadow:none;color:#ffffff}
+.app-shell .btn-primary:hover:not(:disabled),body.workspace-active .modal .btn-primary:hover:not(:disabled){background:#1a5940;box-shadow:0 4px 14px #27765720}
+.app-shell .btn-dark{background:#1b4734}.app-shell .btn-dark:hover{background:#153e33}
+.app-shell .btn-soft{background:#e5f0d8;color:#4c7444}
+.app-shell .btn-line{border-color:#d1dfcb;color:#5d7454;background:transparent}
+.app-shell .btn-line:hover{background:#edf5e7}
+.app-shell .service-image{background:#e7f2da;color:#608342}
+.app-shell .service-card:nth-child(2) .service-image{background:#e4efea;color:#568477}
+.app-shell .service-card:nth-child(3) .service-image{background:#f0f3db;color:#7a854c}
+.app-shell .custom-order-card{background:linear-gradient(130deg,#edf8dd,#e6f1e4);border-color:#cee2ba}
+.app-shell .custom-order-card .service-image{background:#d6edbf;color:#527b3b}
+.app-shell .service-price{color:#345839}
+.app-shell .tag{background:#e6efdb;color:#637d48;font-weight:500}
+.app-shell .tag.neutral{background:#e9eee7;color:#74816b}.app-shell .tag.blue{background:#e3eee9;color:#54796a}.app-shell .tag.demo{background:#f0f2d9;color:#7b8346}.app-shell .tag.danger{background:#f9e7e2;color:#ab6959}
+.app-shell .feature-icon,.app-shell .avatar{background:#deedcf;color:#5b7d43}
+.app-shell .order-row{border-color:#e0e9d9}.app-shell .order-main h4{font-size:15px;font-weight:500}
+.app-shell .order-price{font-weight:500;color:#547044}.app-shell .order-id{color:#8a9d7a}
+.app-shell input,.app-shell select,.app-shell textarea,body.workspace-active .modal input,body.workspace-active .modal select,body.workspace-active .modal textarea{border-color:#d4e0cb;border-radius:9px;color:#294332;background:#ffffff;font-size:14px;font-weight:400}
+.app-shell .field label,body.workspace-active .modal .field label{font-size:13px;font-weight:500;color:#58704c}
+.app-shell .btn:focus-visible,.app-shell .nav-item:focus-visible,.app-shell input:focus-visible,.app-shell textarea:focus-visible,.app-shell select:focus-visible{outline-color:#90c969}
+.app-shell .progress-bar{background:#8fbc67}.app-shell .progress-rail{background:#e1ecd8}
+.app-shell .timeline-row{border-color:#d8e5cd}.app-shell .timeline-row:before{background:#84ae63}
+.app-shell .info{background:#e9f2df;color:#688251;border-color:#d5e4c7}
+.app-shell .warn{background:#f5f5e4;color:#8b8a58;border-color:#e6e5c8}
+.app-shell .inbox-layout{background:#fcfefb;border-color:#d6e4cf;box-shadow:0 12px 40px #2b512107;border-radius:16px}
+.app-shell .inbox-conversations{background:#f2f7ed;border-color:#deead5}
+.app-shell .inbox-list-top,.app-shell .inbox-conversation-head,.app-shell .inbox-compose{background:#fcfefb;border-color:#deead5}
 .app-shell .inbox-list-heading strong{font-weight:500;font-size:19px;letter-spacing:-.02em}
-.app-shell .inbox-counter{background:#eee5d9;color:#88705a;font-weight:500}
-.app-shell .inbox-search{background:#f4efe8;border-color:#e1d6c8;color:#9b8c7c}
+.app-shell .inbox-counter{background:#e5efd9;color:#718a55;font-weight:500}
+.app-shell .inbox-search{background:#f1f7e9;border-color:#dbe7ce;color:#8c9e76}
 .app-shell .inbox-search input{background:transparent;border:0}
-.app-shell .inbox-search:focus-within{border-color:#be8560}
-.app-shell .inbox-segment{font-weight:500;color:#8c7d6c}
-.app-shell .inbox-segment.selected{background:#ead8c6;color:#865437}
-.app-shell .inbox-thread{border-color:#ebe3d8}
-.app-shell .inbox-thread:hover{background:#f0e9e0}
-.app-shell .inbox-thread.selected{background:#ede3d6;border-left-color:#b77d58}
-.app-shell .inbox-thread-top strong{font-weight:500;font-size:14px;color:#51473c}
-.app-shell .inbox-thread-avatar,.app-shell .inbox-head-avatar,.app-shell .inbox-message-avatar{background:#e7d9c7;color:#8a6746}
-.app-shell .inbox-thread-badge,.app-shell .inbox-avatar-pip{background:#b47a55;color:white}
-.app-shell .inbox-conversation{background:#f7f3ed}
-.app-shell .inbox-conversation-banner,.app-shell .inbox-list-foot{background:#f0ebe3;color:#9a8b78;border-color:#e5dccf}
-.app-shell .inbox-feed{background:#f7f3ed}
-.app-shell .inbox-message-bubble{background:#fffdf9;border-color:#e6dccc;color:#51473d;box-shadow:0 2px 5px #5e443005}
-.app-shell .mine .inbox-message-bubble{background:#eadec9;border-color:#ddc9ad;color:#514330}
-.app-shell .inbox-message-author{color:#9b6c48;font-weight:500}
-.app-shell .inbox-compose-main{background:#f8f4ee;border-color:#e2d6c6}
+.app-shell .inbox-search:focus-within{border-color:#8fbc67}
+.app-shell .inbox-segment{font-weight:500;color:#7f9268}
+.app-shell .inbox-segment.selected{background:#dbedc6;color:#5c7d3a}
+.app-shell .inbox-thread{border-color:#e4edda}
+.app-shell .inbox-thread:hover{background:#eaf3df}
+.app-shell .inbox-thread.selected{background:#e2efd2;border-left-color:#8aba58}
+.app-shell .inbox-thread-top strong{font-weight:500;font-size:14px;color:#405635}
+.app-shell .inbox-thread-avatar,.app-shell .inbox-head-avatar,.app-shell .inbox-message-avatar{background:#d7e9c3;color:#60803f}
+.app-shell .inbox-thread-badge,.app-shell .inbox-avatar-pip{background:#80aa50;color:white}
+.app-shell .inbox-conversation{background:#f6faf1}
+.app-shell .inbox-conversation-banner,.app-shell .inbox-list-foot{background:#edf4e5;color:#8a9e72;border-color:#dfe9d4}
+.app-shell .inbox-feed{background:#f6faf1}
+.app-shell .inbox-message-bubble{background:#ffffff;border-color:#dde8d1;color:#3e5734;box-shadow:0 2px 5px #34502205}
+.app-shell .mine .inbox-message-bubble{background:#e2f1d0;border-color:#cfe3b6;color:#3d592b}
+.app-shell .inbox-message-author{color:#6c8b48;font-weight:500}
+.app-shell .inbox-compose-main{background:#f5faee;border-color:#dce8ce}
 .app-shell .inbox-compose-main textarea{background:transparent;border:0}
-.app-shell .inbox-send-button{background:#a34e38;color:#fffaf4;box-shadow:none;font-weight:500}
-.app-shell .inbox-send-button:hover{background:#813c2b}
-.app-shell .inbox-title-dot{background:#b47a55;box-shadow:0 0 0 6px #f0e3d4}
-.app-shell .inbox-save-status{background:#ece6db;color:#8c7656;font-weight:500}
-.app-shell .inbox-unread-label{color:#a6724e;font-weight:500}
-.app-shell .inbox-empty-art{background:#eee3d4;color:#b28c65}
-body.workspace-active .modal{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#fffcf8;color:#413c36}
-body.workspace-active .modal h2{font-family:Georgia,serif;font-weight:400;letter-spacing:-.03em}
+.app-shell .inbox-send-button{background:#277657;color:#ffffff;box-shadow:none;font-weight:500}
+.app-shell .inbox-send-button:hover{background:#1a5940}
+.app-shell .inbox-title-dot{background:#80aa50;box-shadow:0 0 0 6px #e4f0d5}
+.app-shell .inbox-save-status{background:#e8f0df;color:#738d53;font-weight:500}
+.app-shell .inbox-unread-label{color:#729448;font-weight:500}
+.app-shell .inbox-empty-art{background:#e4f0d5;color:#91ad6d}
+body.workspace-active .modal{font-family:'Helvetica Neue',Arial,'Segoe UI',sans-serif;background:#fcfefb;color:#294332}
+body.workspace-active .modal h2{font-family:'Helvetica Neue',Arial,'Segoe UI',sans-serif;font-weight:400;letter-spacing:-.03em}
 @media(max-width:700px){.app-shell .surface{padding:20px}.app-shell .page-top h1,.app-shell .inbox-page-top h1{font-size:30px}.app-shell .stat .value{font-size:29px}}
 .app-shell .service-price{font-weight:600;letter-spacing:-.02em}
-.app-shell .requirement-list span{background:#f0eae2;color:#8a7158}
-.app-shell .sidebar-bottom{border-color:#4a433c}.app-shell .side-user small{color:#b7a998}
-.app-shell .inbox-thread.selected{box-shadow:inset 3px 0 #b77d58}
-.app-shell .inbox-thread-person{color:#9c795b}
-.app-shell .inbox-thread-preview,.app-shell .inbox-thread-top time{color:#968675}
-.app-shell .inbox-open-order{background:#f1e7da;border-color:#dfcdb8;color:#956749;font-weight:500}
-.app-shell .inbox-open-order:hover{background:#eadbc8}
-.app-shell .inbox-day-divider{color:#9b8b78;font-weight:500}
-.app-shell .inbox-day-divider:before,.app-shell .inbox-day-divider:after{background:#e4dacb}
-.app-shell .inbox-day-divider span{background:#eee5d8}
-.app-shell .inbox-message-text{color:#51473d;font-size:14px;line-height:1.65}
-.app-shell .inbox-message-meta,.app-shell .inbox-message-row.mine .inbox-message-meta{color:#a18b71}
-.app-shell .inbox-compose-bottom,.app-shell .inbox-compose-foot{color:#a18b71}
-.app-shell .inbox-compose textarea::placeholder{color:#a18f7b}
+.app-shell .requirement-list span{background:#eaf2df;color:#6d8751}
+.app-shell .sidebar-bottom{border-color:#315b49}.app-shell .side-user small{color:#98b99f}
+.app-shell .inbox-thread.selected{box-shadow:inset 3px 0 #8aba58}
+.app-shell .inbox-thread-person{color:#779650}
+.app-shell .inbox-thread-preview,.app-shell .inbox-thread-top time{color:#879c71}
+.app-shell .inbox-open-order{background:#e8f2db;border-color:#d5e5c0;color:#6b8b46;font-weight:500}
+.app-shell .inbox-open-order:hover{background:#dfedcd}
+.app-shell .inbox-day-divider{color:#8c9e76;font-weight:500}
+.app-shell .inbox-day-divider:before,.app-shell .inbox-day-divider:after{background:#e0e9d3}
+.app-shell .inbox-day-divider span{background:#eaf2df}
+.app-shell .inbox-message-text{color:#3e5734;font-size:14px;line-height:1.65}
+.app-shell .inbox-message-meta,.app-shell .inbox-message-row.mine .inbox-message-meta{color:#8c9e76}
+.app-shell .inbox-compose-bottom,.app-shell .inbox-compose-foot{color:#8c9e76}
+.app-shell .inbox-compose textarea::placeholder{color:#8c9e76}
+.app-shell h1,.app-shell h2{font-weight:500;letter-spacing:-.035em}
+.app-shell .page-top h1,.app-shell .inbox-page-top h1{font-size:32px}
+.app-shell .sidebar .brand{font-size:23px;font-weight:600;letter-spacing:-.035em}
+.app-shell .surface,.app-shell .service-card,.app-shell .stat{border-radius:18px}
+.app-shell .btn{border-radius:12px;font-weight:500}
+.app-shell .nav-item{border-radius:12px;font-size:14px}
+.app-shell .nav-item.active{box-shadow:0 3px 12px #071f1710}
+.app-shell .stat .value{font-size:32px;font-weight:500;letter-spacing:-.04em}
+.app-shell .service-card h3{font-size:20px;font-weight:500;letter-spacing:-.025em}
+.app-shell .service-price{font-size:26px;font-weight:500}
+.app-shell .surface h3{font-size:19px;font-weight:500}
+.app-shell .inbox-layout{border-radius:20px}
+.app-shell .inbox-conversation-head h2{font-family:inherit;font-size:17px;font-weight:500;letter-spacing:-.015em}
+.app-shell .inbox-thread-top strong{font-weight:500}
+.app-shell .inbox-save-status{font-weight:400}
+body.workspace-active .modal h2{font-weight:500;font-size:28px}
+@media(max-width:700px){.app-shell .page-top h1,.app-shell .inbox-page-top h1{font-size:28px}}
+.app-shell .eyebrow{color:#729060}.app-shell .custom-order-card .service-price{font-size:22px}.app-shell .sidebar-bottom{border-color:#315b49}
