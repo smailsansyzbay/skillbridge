@@ -58,10 +58,6 @@ Customers have a separate Finances page showing order payments, funds in active 
 
 Customer withdrawals use the same confirmation and available-balance validation as specialist rewards, with separate ledger transaction types and ownership checks. Payments, refunds and withdrawals persist in JSON. Banking actions remain local simulations and store only four fictional account digits.
 
-## Visual design system
-
-CSS tokens in css/tokens.css define brand, semantic, surface and control colours, typography and spacing. Inter is served locally with its SIL Open Font License. Georgia is reserved for editorial headings. Workspaces share controls and status meanings, with role-specific priorities and compact administrative queues.
-
 ## Features
 
 - Landing page, service catalog and responsive dashboards for customer, performer and administrator.

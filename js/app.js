@@ -138,7 +138,7 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  return modal(title,body,wide);
 }
 function scrollInbox(){const feed=$('#inbox-chat-feed');if(feed)feed.scrollTop=feed.scrollHeight;}
-function show(){const root=$('#app');if(!root)return;document.documentElement.lang=({ru:'ru',kz:'kk',en:'en'})[d().settings.language];document.title=term('SkillBridge — Микро-задания для бизнеса и исполнителей','SkillBridge — Бизнес пен орындаушыларға арналған шағын тапсырмалар');let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():'');document.body.classList.toggle('modal-active',!!state.modal);document.body.classList.toggle('workspace-active',state.route!=='landing'&&!!state.uid);document.body.dataset.workspace=getUser()?.role||'';if(state.route==='messages')requestAnimationFrame(scrollInbox);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
+function show(){const root=$('#app');if(!root)return;document.documentElement.lang=({ru:'ru',kz:'kk',en:'en'})[d().settings.language];document.title=term('SkillBridge — Микро-задания для бизнеса и исполнителей','SkillBridge — Бизнес пен орындаушыларға арналған шағын тапсырмалар');let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():'');document.body.classList.toggle('modal-active',!!state.modal);document.body.classList.toggle('workspace-active',state.route!=='landing'&&!!state.uid);if(state.route==='messages')requestAnimationFrame(scrollInbox);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
 const navigation={session:Date.now().toString(36)+Math.random().toString(36).slice(2),entries:[],index:-1,restoring:false};
 function navigationSnapshot(){
  return {uid:state.uid,route:state.route,department:state.route==='catalog'?state.catalogDepartment:null,orderId:state.route==='order-detail'?state.orderId:null};
@@ -278,14 +278,13 @@ async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid
   choose(admin.id);break;
  }
  case 'add-demo-user':open('new-demo-user',{role:el.dataset.role});break;
- case 'preview-department':if(getUser()?.role==='business')navigate('catalog',null,el.dataset.department);else open('account',{role:'business',department:el.dataset.department});break;
  case 'open-department':navigate('catalog',null,el.dataset.department);break;
  case 'service-info':open('service-info',{sid});break;
  case 'request-refund':open('refund-request');break;
  case 'open-withdraw':open('withdraw',{requestId:window.SBData.id('request')});break;
  case 'begin-demo':open('account',{role:el.dataset.role});break;
  case 'logout':state.uid=null;sessionStorage.removeItem('sb-current-user');navigate('landing');break;
- case 'switch-account':{const department=state.modal?.department;choose(el.dataset.uid);if(department&&getUser()?.role==='business')navigate('catalog',null,department);break;}
+ case 'switch-account':choose(el.dataset.uid);break;
  case 'start-order':if(getUser()?.role!=='business'){open('account',{role:'business'});return;}open('order',{sid});break;
  case 'apply':tryAction(()=>window.SBData.apply(state.uid,oid),term('Отклик отправлен.','Өтінім жіберілді.'));break;
  case 'open-pay':open('pay',{oid});break;
