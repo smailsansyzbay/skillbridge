@@ -58,6 +58,16 @@ Customers have a separate Finances page showing order payments, funds in active 
 
 Customer withdrawals use the same confirmation and available-balance validation as specialist rewards, with separate ledger transaction types and ownership checks. Payments, refunds and withdrawals persist in JSON. Banking actions remain local simulations and store only four fictional account digits.
 
+## Bridgy guided onboarding
+
+Bridgy is an optional illustrated guide for customer and specialist workspaces. The header button opens the guide; it can be collapsed, reopened or dismissed with Escape. It stays out of admin workspaces, public landing pages, navigation drawers and modal forms.
+
+Customer guidance covers briefs, payment, conversations, result review and finances. Specialist guidance covers profile details, tests, task applications, delivery and rewards. Progress is derived from current account data. Guide actions open existing routes and the relevant order, payment or conversation without changing task or financial state. Choosing Start Here reviews the first step without resetting user data. Per-profile UI preferences persist locally under skillbridge_guide_v1.
+
+The mascot is stored in assets/guide-mascot.png. It was created with the built-in image generation tool, with a transparent background, using this prompt.
+
+> Create a polished original mascot illustration for SkillBridge, a professional green microtask marketplace. A small friendly lime-green sparrow guide with a rounded pear-shaped body, expressive dark forest-green eyes, tiny beak, dark green wings, subtle cream belly, little cross-body satchel, holding a small blank checklist clipboard. Warm, intelligent, reassuring personality, gender-neutral. Full body, slight three-quarter view, one wing gesturing helpfully. Sophisticated flat editorial illustration with gently textured edges and restrained soft shading, clear silhouette legible at 64 pixels. Forest green #233C36 and lime #C7F391. Transparent background, no scene, no frame, no lettering, no watermark. Square composition with generous transparent margins. This is one mascot asset for an in-app onboarding helper, not a screenshot.
+
 ## Features
 
 - Landing page, service catalog and responsive dashboards for customer, performer and administrator.

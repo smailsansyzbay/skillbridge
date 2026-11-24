@@ -138,7 +138,7 @@ function modalContent(){const m=state.modal;if(!m)return '';const uid=state.uid,
  return modal(title,body,wide);
 }
 function scrollInbox(){const feed=$('#inbox-chat-feed');if(feed)feed.scrollTop=feed.scrollHeight;}
-function show(){const root=$('#app');if(!root)return;document.documentElement.lang=({ru:'ru',kz:'kk',en:'en'})[d().settings.language];document.title=term('SkillBridge — Микро-задания для бизнеса и исполнителей','SkillBridge — Бизнес пен орындаушыларға арналған шағын тапсырмалар');let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():'');document.body.classList.toggle('modal-active',!!state.modal);document.body.classList.toggle('workspace-active',state.route!=='landing'&&!!state.uid);if(state.route==='messages')requestAnimationFrame(scrollInbox);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
+function show(){const root=$('#app');if(!root)return;document.documentElement.lang=({ru:'ru',kz:'kk',en:'en'})[d().settings.language];document.title=term('SkillBridge — Микро-задания для бизнеса и исполнителей','SkillBridge — Бизнес пен орындаушыларға арналған шағын тапсырмалар');let markup='';if(state.route==='landing'||!state.uid){markup=ui().landing();}else{markup=ui().shell(ui().renderContent());}root.innerHTML=markup+(state.modal?modalContent():window.SBGuide.render());document.body.classList.toggle('modal-active',!!state.modal);document.body.classList.toggle('workspace-active',state.route!=='landing'&&!!state.uid);if(state.route==='messages')requestAnimationFrame(scrollInbox);if(state.modal){const focus=root.querySelector('.modal [name],.modal button');if(focus)focus.focus({preventScroll:true});}}
 const navigation={session:Date.now().toString(36)+Math.random().toString(36).slice(2),entries:[],index:-1,restoring:false};
 function navigationSnapshot(){
  return {uid:state.uid,route:state.route,department:state.route==='catalog'?state.catalogDepartment:null,orderId:state.route==='order-detail'?state.orderId:null};
@@ -258,7 +258,7 @@ async function submitForm(form){const fd=new FormData(form), type=form.dataset.f
  state.modal=null;render(true);success();
  }catch(e){toast(e.message||'Form error',true);}
 }
-async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid=el.dataset.sid,target=el.dataset.target;
+async function clicked(el){const action=el.dataset.action,oid=el.dataset.oid,sid=el.dataset.sid,target=el.dataset.target;if(action?.startsWith('guide-')){window.SBGuide.handle(action,el.dataset);return;}
  try{
  switch(action){
  case 'history-back':if(navigation.index>0)history.back();break;
@@ -342,7 +342,7 @@ function initialize(){window.addEventListener('popstate',restoreNavigation);wind
   if(e.target.matches('[data-inbox-search]')){const query=e.target.value,cursor=e.target.selectionStart;state.inbox.query=query;state.inbox.mobileChat=false;render(true);const next=$('[data-inbox-search]');if(next){next.focus({preventScroll:true});try{next.setSelectionRange(cursor,cursor);}catch(err){}}}
  });
  document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&state.modal)close();
+  if(e.key==='Escape'&&state.modal)close();else if(e.key==='Escape'&&document.querySelector('.guide-panel'))window.SBGuide.handle('guide-toggle',{});
   if(e.target.matches('[data-inbox-composer]')&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(e.target.value.trim())e.target.form?.requestSubmit();}
  });
 }
