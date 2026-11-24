@@ -1,0 +1,28 @@
+@font-face{font-family:Inter;src:url("../assets/fonts/InterVariable.woff2") format("woff2");font-weight:100 900;font-display:swap}
+:root{
+  --brand:#233C36;
+  --action:#277657;
+  --action-hover:#1A5940;
+  --accent:#C7F391;
+  --landing:#F7F4EE;
+  --workspace:#F6F8F6;
+  --card:#FFFFFF;
+  --surface:#EDF2EE;
+  --text:#223F34;
+  --secondary:#50665B;
+  --border:#DCE7DC;
+  --control:#81938A;
+  --success:#277657;
+  --success-bg:#E7F2E9;
+  --warning:#946200;
+  --warning-bg:#FFF4DA;
+  --error:#B43E45;
+  --error-bg:#FCE9E9;
+  --info:#38639A;
+  --info-bg:#EAF0F8;
+  --progress:#E5F1D8;
+  --on-dark:#FFFFFF;
+  --font-ui:Inter,Arial,sans-serif;
+  --font-editorial:Georgia,serif;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;--space-16:64px;--space-20:80px;
+}
