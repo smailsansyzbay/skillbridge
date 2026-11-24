@@ -4,7 +4,7 @@ const KEY='skillbridge_guide_v1';
 let preferences={};
 try{const saved=JSON.parse(localStorage.getItem(KEY));if(saved&&typeof saved==='object'&&!Array.isArray(saved))preferences=saved;}catch(error){}
 const text=(ru,kz,en)=>window.SBI18n.text(ru,kz,en);
-function settings(uid){const saved=preferences[uid];return saved&&typeof saved==='object'?saved:{collapsed:false,selected:null};}
+function settings(uid){const saved=preferences[uid];return saved&&typeof saved==='object'?saved:{collapsed:true,selected:null};}
 function update(uid,patch){preferences[uid]={...settings(uid),...patch};try{localStorage.setItem(KEY,JSON.stringify(preferences));}catch(error){}}
 function plan(uid){
  const user=SBData.user(uid);if(!user||!['business','performer'].includes(user.role))return null;
@@ -43,9 +43,9 @@ function render(){
  const selected=steps.find(step=>step.id===prefs.selected)||steps.find(step=>!step.done)||steps[steps.length-1];
  const name=text('Бриджи','Бриджи','Bridgy');
  const mascot='<img src="assets/guide-mascot.png" alt="" width="80" height="80">';
- const toggle='';
- if(prefs.collapsed)return '';
- return '<div class="guide-widget"><aside id="skillbridge-guide" class="guide-panel" aria-labelledby="guide-title"><div class="guide-heading">'+mascot+'<div><h2 id="guide-title" tabindex="-1">'+name+'</h2><p>'+text('Помогу разобраться','Түсінуге көмектесемін','Here to help you get started')+'</p></div><button class="guide-dismiss" data-action="guide-toggle" aria-label="'+text('Свернуть гид','Гидті жинау','Collapse guide')+'">×</button></div><div class="guide-progress"><span>'+text('Ваш путь','Сіздің жолыңыз','Your journey')+'</span><strong>'+data.completed+' / '+steps.length+'</strong><progress value="'+data.completed+'" max="'+steps.length+'" aria-label="'+text('Выполнено шагов','Орындалған қадамдар','Steps completed')+'"></progress></div><nav class="guide-steps" aria-label="'+text('Шаги гида','Гид қадамдары','Guide steps')+'">'+steps.map((step,index)=>'<button data-action="guide-step" data-step="'+step.id+'" class="'+(step.id===selected.id?'selected':'')+'" aria-current="'+(step.id===selected.id?'step':'false')+'"><span>'+(step.done?'✓':index+1)+'</span>'+h(step.title)+(step.done?'<small>'+text('Готово','Дайын','Done')+'</small>':'')+'</button>').join('')+'</nav><section class="guide-advice"><h3 tabindex="-1">'+h(selected.title)+'</h3><p>'+h(selected.description)+'</p><button class="btn btn-primary" data-action="guide-go" data-step="'+selected.id+'">'+h(selected.label)+' →</button></section><div class="guide-footer"><span>'+text('Прогресс — по вашим действиям','Ілгерілеу әрекеттеріңізге байланысты','Progress follows your actual actions')+'</span><button data-action="guide-reset">'+text('К началу','Басына','Start here')+'</button></div></aside>'+toggle+'</div>';
+ const toggle=launcher();
+ if(prefs.collapsed)return '<div class="guide-widget">'+toggle+'</div>';
+ return '<div class="guide-widget is-open"><aside id="skillbridge-guide" class="guide-panel" aria-labelledby="guide-title"><div class="guide-heading">'+mascot+'<div><h2 id="guide-title" tabindex="-1">'+name+'</h2><p>'+text('Помогу разобраться','Түсінуге көмектесемін','Here to help you get started')+'</p></div><button class="guide-dismiss" data-action="guide-toggle" aria-label="'+text('Свернуть гид','Гидті жинау','Collapse guide')+'">×</button></div><div class="guide-progress"><span>'+text('Ваш путь','Сіздің жолыңыз','Your journey')+'</span><strong>'+data.completed+' / '+steps.length+'</strong><progress value="'+data.completed+'" max="'+steps.length+'" aria-label="'+text('Выполнено шагов','Орындалған қадамдар','Steps completed')+'"></progress></div><nav class="guide-steps" aria-label="'+text('Шаги гида','Гид қадамдары','Guide steps')+'">'+steps.map((step,index)=>'<button data-action="guide-step" data-step="'+step.id+'" class="'+(step.id===selected.id?'selected':'')+'" aria-current="'+(step.id===selected.id?'step':'false')+'"><span>'+(step.done?'✓':index+1)+'</span>'+h(step.title)+(step.done?'<small>'+text('Готово','Дайын','Done')+'</small>':'')+'</button>').join('')+'</nav><section class="guide-advice"><h3 tabindex="-1">'+h(selected.title)+'</h3><p>'+h(selected.description)+'</p><button class="btn btn-primary" data-action="guide-go" data-step="'+selected.id+'">'+h(selected.label)+' →</button></section><div class="guide-footer"><span>'+text('Прогресс — по вашим действиям','Ілгерілеу әрекеттеріңізге байланысты','Progress follows your actual actions')+'</span><button data-action="guide-reset">'+text('К началу','Басына','Start here')+'</button></div></aside>'+toggle+'</div>';
 }
 function handle(action,dataset){
  const uid=SBApp.uid(),data=plan(uid);if(!data)return;
@@ -63,7 +63,7 @@ function handle(action,dataset){
 }
 function launcher(){
  const prefs=settings(SBApp.uid());
- return '<button id="guide-launcher" class="guide-launcher" data-action="guide-toggle" aria-expanded="'+(!prefs.collapsed)+'" aria-controls="skillbridge-guide" aria-label="'+text('Помощь Бриджи','Бриджи көмегі','Bridgy help')+'"><img src="assets/guide-mascot.png" alt="" width="40" height="40"><span>'+text('Гид','Гид','Guide')+'</span></button>';
+ return '<button id="guide-launcher" class="guide-launcher" data-action="guide-toggle" aria-expanded="'+(!prefs.collapsed)+'" aria-controls="skillbridge-guide" aria-label="'+text('Помощь Бриджи','Бриджи көмегі','Bridgy help')+'"><img src="assets/guide-mascot.png" alt="" width="96" height="96"><span>'+text('Гид','Гид','Guide')+'</span></button>';
 }
 window.SBGuide={plan,render,handle,launcher};
 })();

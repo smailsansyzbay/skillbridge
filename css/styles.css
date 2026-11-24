@@ -450,7 +450,24 @@ body.workspace-active .modal h2{font-weight:500;font-size:28px}
 .guide-footer{display:flex;align-items:center;gap:12px;padding:12px 20px;border-top:1px solid #e1ead8}
 .guide-footer>span{font-size:10px;line-height:1.6;color:#637b56;flex:1}
 .guide-footer button{background:transparent;border:0;text-decoration:underline;font-size:11px;color:#52723e;padding:6px;cursor:pointer}
-@media(max-width:700px){.guide-widget{right:16px;top:80px}.guide-panel{max-height:calc(100dvh - 96px)}.guide-launcher{padding:0 3px}.guide-launcher span{display:none}.guide-launcher img{width:32px;height:32px}.app-header .header-right [data-route=profile]{display:none}.app-header .header-right{gap:6px}}
+@media(max-width:700px){.guide-widget{right:16px;top:80px}.guide-panel{max-height:calc(100dvh - 96px)}.guide-launcher{padding:0 3px}.guide-launcher span{display:none}.guide-launcher img{width:32px;height:32px}.app-header .header-right{gap:6px}}
 @media(prefers-reduced-motion:reduce){.guide-widget *{animation:none;transition:none}}
 
 .guide-heading h2:focus{outline:2px solid #9abc83;outline-offset:3px;border-radius:4px}
+/* Floating character dock. Panel and launcher share a viewport-safe container. */
+.guide-widget{top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));right:24px;display:flex;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none}
+.guide-widget>*{pointer-events:auto}
+.guide-panel{width:100%;max-height:calc(100dvh - 216px - env(safe-area-inset-bottom,0px));transform-origin:bottom right;animation:guide-panel-in .24s ease-out}
+.guide-launcher{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;width:96px;min-height:110px;padding:0;border:0;background:transparent;border-radius:18px;color:#365b2c;transition:transform .24s ease,background .2s ease}
+.guide-launcher:hover{background:transparent;transform:translateY(-3px)}
+.guide-launcher img{display:block;width:88px;height:88px;object-fit:contain;transform-origin:50% 86%;animation:guide-idle 5.5s ease-in-out infinite}
+.guide-launcher span{display:block;border:1px solid #b6cf9e;background:#f2fae9;border-radius:20px;padding:4px 12px;font-size:11px;line-height:1.3}
+.guide-widget.is-open .guide-launcher{transform:scale(1.08);transform-origin:bottom right}
+.guide-widget.is-open .guide-launcher img{animation:guide-greeting .65s ease-out both}
+.guide-heading>img{animation:guide-greeting .65s ease-out both;transform-origin:50% 90%}
+body.workspace-active:has(.guide-widget) .content{padding-bottom:160px}
+@keyframes guide-idle{0%,12%,30%,100%{transform:translateY(0) rotate(0)}18%{transform:translateY(-5px) rotate(-3deg)}24%{transform:translateY(-2px) rotate(3deg)}}
+@keyframes guide-greeting{0%{transform:scale(.93) rotate(-5deg)}40%{transform:scale(1.05) rotate(5deg)}70%{transform:scale(1) rotate(-3deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes guide-panel-in{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:700px){.guide-widget{top:auto;right:16px;bottom:calc(12px + env(safe-area-inset-bottom,0px))}.guide-launcher{width:80px;min-height:92px}.guide-launcher img{width:72px;height:72px}.guide-launcher span{display:block;font-size:10px;padding:3px 10px}.guide-panel{max-height:calc(100dvh - 196px - env(safe-area-inset-bottom,0px))}}
+@media(prefers-reduced-motion:reduce){.guide-widget *{animation:none!important;transition:none!important}.guide-widget.is-open .guide-launcher,.guide-launcher:hover{transform:none}}

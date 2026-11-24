@@ -60,7 +60,7 @@ Customer withdrawals use the same confirmation and available-balance validation 
 
 ## Bridgy guided onboarding
 
-Bridgy is an optional illustrated guide for customer and specialist workspaces. The header button opens the guide; it can be collapsed, reopened or dismissed with Escape. It stays out of admin workspaces, public landing pages, navigation drawers and modal forms.
+Bridgy is an optional illustrated guide for customer and specialist workspaces. The animated mascot button in the lower-right corner opens the guide; it can be collapsed, reopened or dismissed with Escape. New profiles start collapsed. Idle motion, a greeting and panel expansion use CSS animation, with reduced-motion support. It stays out of admin workspaces, public landing pages, navigation drawers and modal forms.
 
 Customer guidance covers briefs, payment, conversations, result review and finances. Specialist guidance covers profile details, tests, task applications, delivery and rewards. Progress is derived from current account data. Guide actions open existing routes and the relevant order, payment or conversation without changing task or financial state. Choosing Start Here reviews the first step without resetting user data. Per-profile UI preferences persist locally under skillbridge_guide_v1.
 
